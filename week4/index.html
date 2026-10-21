@@ -242,14 +242,14 @@
 
 <aside class="callout predict">
 <p class="callout-title">Predict first</p>
-<p>In the next step you add a 100dp margin around the <strong>first</strong> TextView only. What do you think will happen to the <strong>second</strong> TextView?</p>
+<p>In the next step you add a 10dp margin around the <strong>first</strong> TextView only. What do you think will happen to the <strong>second</strong> TextView?</p>
 </aside>
 
 <ol class="steps" start="6" style="--start:5">
 <li>Add a margin to the first TextView:
-<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;TextView</span><span class="line">    android:id="@+id/textView1"</span><span class="line">    android:layout_width="match_parent"</span><span class="line">    android:layout_height="wrap_content"</span><span class="line hl">    android:layout_margin="100dp"</span><span class="line">    android:background="#0F0"</span><span class="line">    android:text="Hello World!" /&gt;</span></code></pre></div></li>
+<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;TextView</span><span class="line">    android:id="@+id/textView1"</span><span class="line">    android:layout_width="match_parent"</span><span class="line">    android:layout_height="wrap_content"</span><span class="line hl">    android:layout_margin="10dp"</span><span class="line">    android:background="#0F0"</span><span class="line">    android:text="Hello World!" /&gt;</span></code></pre></div></li>
 <li>Look at the output. The second TextView follows the first one: it stays <strong>below</strong> it and <strong>aligned with its right edge</strong>, even though you did not change the second TextView at all.
-<figure><img src="assets/img/fig17.png" alt="Both TextViews moved inward by the 100dp margin" width="203" loading="lazy"></figure></li>
+<figure><img src="assets/img/fig17.png" alt="Both TextViews moved inward by the 10dp margin" width="203" loading="lazy"></figure></li>
 </ol>
 
 <aside class="callout checkpoint">
