@@ -89,21 +89,18 @@
 <figure><img src="assets/img/fig03.png" alt="Project panel showing activity_main.xml inside res/layout" width="263" loading="lazy"></figure>
 <p>The file opens in <strong>Design</strong> view. Switch to <strong>Code</strong> (or <strong>Split</strong>) with the buttons in the top right corner.</p>
 <figure><img src="assets/img/fig04.png" alt="Code, Split and Design buttons in the layout editor" width="253" loading="lazy"></figure></li>
-<li>Instead of typing your name straight into the layout, store it as a <strong>string resource</strong>. Open <strong>res › values › strings.xml</strong> and add one line:
-<div class="code"><div class="code-head"><span class="code-file">res/values/strings.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;resources&gt;</span><span class="line">    &lt;string name="app_name"&gt;LabActivity1&lt;/string&gt;</span><span class="line hl">    &lt;string name="my_name"&gt;Your Name&lt;/string&gt;</span><span class="line">&lt;/resources&gt;</span></code></pre></div>
-<p>Replace <em>Your Name</em> with your own name. Keeping text in <code>strings.xml</code> is the recommended practice: it lets the app be translated, and Android Studio shows a warning when text is hard-coded in a layout.</p></li>
-<li>The template uses a <strong>ConstraintLayout</strong> as the root. Change it to a <strong>LinearLayout</strong>, remove the four <code>app:layout_constraint...</code> lines from the TextView (they only work inside a ConstraintLayout), and point the text at your string. Your file should now look like this:
-<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span><span class="line hl">&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"</span><span class="line">    xmlns:tools="http://schemas.android.com/tools"</span><span class="line">    android:id="@+id/main"</span><span class="line">    android:layout_width="match_parent"</span><span class="line">    android:layout_height="match_parent"</span><span class="line">    tools:context=".MainActivity"&gt;</span><span class="line">&#8203;</span><span class="line">    &lt;TextView</span><span class="line">        android:layout_width="wrap_content"</span><span class="line">        android:layout_height="wrap_content"</span><span class="line hl">        android:text="@string/my_name" /&gt;</span><span class="line">&#8203;</span><span class="line hl">&lt;/LinearLayout&gt;</span></code></pre></div></li>
-<li>Switch to <strong>Design</strong> (or look at the Split preview). Your name appears in the top-left corner. Now press the green <strong>Run ▶</strong> button once to launch the app on the emulator, so you know your setup works.
-<figure><img src="assets/img/fig05.png" alt="Preview with the name in the top-left corner" width="173" loading="lazy"></figure></li>
+<li>The template uses a <strong>ConstraintLayout</strong> as the root. Change it to a <strong>LinearLayout</strong>, remove the four <code>app:layout_constraint...</code> lines from the TextView (they only work inside a ConstraintLayout). Keep the <code>"Hello World!"</code> text. Your file should now look like this:
+<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span><span class="line hl">&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"</span><span class="line">    xmlns:tools="http://schemas.android.com/tools"</span><span class="line">    android:id="@+id/main"</span><span class="line">    android:layout_width="match_parent"</span><span class="line">    android:layout_height="match_parent"</span><span class="line">    tools:context=".MainActivity"&gt;</span><span class="line">&#8203;</span><span class="line">    &lt;TextView</span><span class="line">        android:layout_width="wrap_content"</span><span class="line">        android:layout_height="wrap_content"</span><span class="line">        android:text="Hello World!" /&gt;</span><span class="line">&#8203;</span><span class="line hl">&lt;/LinearLayout&gt;</span></code></pre></div></li>
+<li>Switch to <strong>Design</strong> (or look at the Split preview). “Hello World!” appears in the top-left corner. Now press the green <strong>Run ▶</strong> button once to launch the app on the emulator, so you know your setup works.
+<figure><img src="assets/img/fig05.png" alt="Preview with Hello World! in the top-left corner" width="173" loading="lazy"></figure></li>
 </ol>
 </section>
 
 <section class="step" id="linear-sizes" data-minutes="15">
 <h2>Activity 1: Sizes and orientation</h2>
-<ol class="steps" start="8" style="--start:7">
+<ol class="steps" start="7" style="--start:6">
 <li>A TextView is a rectangle, but you cannot see its edges. Add a green background so you can:
-<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;TextView</span><span class="line">    android:layout_width="wrap_content"</span><span class="line">    android:layout_height="wrap_content"</span><span class="line">    android:text="@string/my_name"</span><span class="line hl">    android:background="#0F0" /&gt;</span></code></pre></div>
+<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;TextView</span><span class="line">    android:layout_width="wrap_content"</span><span class="line">    android:layout_height="wrap_content"</span><span class="line">    android:text="Hello World!"</span><span class="line hl">    android:background="#0F0" /&gt;</span></code></pre></div>
 <figure><img src="assets/img/fig06.png" alt="Green box exactly as big as the text" width="173" loading="lazy"></figure>
 <p>The green box is exactly as big as the text. That is what <code>wrap_content</code> means: <em>as big as my content needs</em>.</p></li>
 </ol>
@@ -113,16 +110,16 @@
 <p>Before you do the next step, write down what you think will happen to the green box if you change <code>layout_width</code> to <code>match_parent</code>.</p>
 </aside>
 
-<ol class="steps" start="9" style="--start:8">
+<ol class="steps" start="8" style="--start:7">
 <li>Change the TextView <code>layout_width</code> to <code>match_parent</code> and check the preview.
-<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;TextView</span><span class="line hl">    android:layout_width="match_parent"</span><span class="line">    android:layout_height="wrap_content"</span><span class="line">    android:text="@string/my_name"</span><span class="line">    android:background="#0F0" /&gt;</span></code></pre></div>
+<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;TextView</span><span class="line hl">    android:layout_width="match_parent"</span><span class="line">    android:layout_height="wrap_content"</span><span class="line">    android:text="Hello World!"</span><span class="line">    android:background="#0F0" /&gt;</span></code></pre></div>
 <figure><img src="assets/img/fig07.png" alt="Green box now fills the full width" width="173" loading="lazy"></figure>
 <p>The TextView now fills the whole width of its parent (<code>match_parent</code>), while its height still follows the text (<code>wrap_content</code>).</p></li>
 <li>Next you will stack more views <strong>vertically</strong>, as in the sketch below. A LinearLayout is <em>horizontal</em> by default, so add the <code>orientation</code> attribute to the root:
 <figure><img src="assets/img/fig08.png" alt="Sketch of three boxes stacked vertically" width="134" loading="lazy"></figure>
 <div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"</span><span class="line">    xmlns:tools="http://schemas.android.com/tools"</span><span class="line">    android:id="@+id/main"</span><span class="line">    android:layout_width="match_parent"</span><span class="line">    android:layout_height="match_parent"</span><span class="line hl">    android:orientation="vertical"</span><span class="line">    tools:context=".MainActivity"&gt;</span></code></pre></div></li>
 <li>Add two more TextViews below the first one, each with a different background colour. (Hard-coded text such as <code>"Hello World!"</code> is fine for quick experiments. Android Studio will underline it with a warning, which you can ignore here.)
-<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;TextView</span><span class="line">    android:layout_width="match_parent"</span><span class="line">    android:layout_height="wrap_content"</span><span class="line">    android:text="@string/my_name"</span><span class="line">    android:background="#0F0" /&gt;</span><span class="line">&#8203;</span><span class="line hl">&lt;TextView</span><span class="line hl">    android:layout_width="match_parent"</span><span class="line hl">    android:layout_height="wrap_content"</span><span class="line hl">    android:text="Hello World!"</span><span class="line hl">    android:background="#00F" /&gt;</span><span class="line">&#8203;</span><span class="line hl">&lt;TextView</span><span class="line hl">    android:layout_width="match_parent"</span><span class="line hl">    android:layout_height="wrap_content"</span><span class="line hl">    android:text="Hello World!"</span><span class="line hl">    android:background="#0FF" /&gt;</span></code></pre></div></li>
+<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;TextView</span><span class="line">    android:layout_width="match_parent"</span><span class="line">    android:layout_height="wrap_content"</span><span class="line">    android:text="Hello World!"</span><span class="line">    android:background="#0F0" /&gt;</span><span class="line">&#8203;</span><span class="line hl">&lt;TextView</span><span class="line hl">    android:layout_width="match_parent"</span><span class="line hl">    android:layout_height="wrap_content"</span><span class="line hl">    android:text="Hello World!"</span><span class="line hl">    android:background="#00F" /&gt;</span><span class="line">&#8203;</span><span class="line hl">&lt;TextView</span><span class="line hl">    android:layout_width="match_parent"</span><span class="line hl">    android:layout_height="wrap_content"</span><span class="line hl">    android:text="Hello World!"</span><span class="line hl">    android:background="#0FF" /&gt;</span></code></pre></div></li>
 <li>Look at the preview. The three boxes are stacked from top to bottom.
 <figure><img src="assets/img/fig09.png" alt="Three coloured boxes stacked vertically" width="182" loading="lazy"></figure></li>
 </ol>
@@ -132,7 +129,7 @@
 <p>Now you will switch the root to a <strong>horizontal</strong> row. All three boxes still use <code>match_parent</code> for their width. How many boxes do you expect to see? Write your answer down before you look.</p>
 </aside>
 
-<ol class="steps" start="13" style="--start:12">
+<ol class="steps" start="12" style="--start:11">
 <li>Change the orientation of the root LinearLayout to horizontal:
 <figure><img src="assets/img/fig10.png" alt="Sketch of three boxes side by side in a row" width="134" loading="lazy"></figure>
 <div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">android:orientation="horizontal"</span></code></pre></div></li>
@@ -160,7 +157,7 @@
 <h2>Activity 1: Weights and nesting</h2>
 <p>Exercise 1 asks for two new ideas: sharing a row with <strong>weights</strong>, and putting one LinearLayout <strong>inside</strong> another. You will try both here, step by step, on the same project.</p>
 
-<ol class="steps" start="17" style="--start:16">
+<ol class="steps" start="16" style="--start:15">
 <li>Your row of three boxes is still there, each <code>wrap_content</code> wide. To make the boxes share the <strong>whole</strong> row, set every TextView's <code>layout_width</code> to <code>0dp</code> and give each one <code>layout_weight="1"</code>:
 <div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;TextView</span><span class="line hl">    android:layout_width="0dp"</span><span class="line">    android:layout_height="wrap_content"</span><span class="line hl">    android:layout_weight="1"</span><span class="line">    ... /&gt;</span></code></pre></div>
 <p>The three boxes are now exactly the same width and together fill the row. <code>0dp</code> means “I take no width of my own”, and the weights decide how the free space is shared: 1 + 1 + 1 = 3 shares, so each box gets one third.</p>
@@ -172,9 +169,9 @@
 <p>In the next step the first box gets <code>layout_weight="2"</code> and the other two keep <code>1</code>. What fraction of the row will the first box take?</p>
 </aside>
 
-<ol class="steps" start="18" style="--start:17">
+<ol class="steps" start="17" style="--start:16">
 <li>Change the weight of the <strong>first</strong> TextView only:
-<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;TextView</span><span class="line">    android:layout_width="0dp"</span><span class="line">    android:layout_height="wrap_content"</span><span class="line hl">    android:layout_weight="2"</span><span class="line">    android:text="@string/my_name"</span><span class="line">    android:background="#0F0" /&gt;</span></code></pre></div>
+<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;TextView</span><span class="line">    android:layout_width="0dp"</span><span class="line">    android:layout_height="wrap_content"</span><span class="line hl">    android:layout_weight="2"</span><span class="line">    android:text="Hello World!"</span><span class="line">    android:background="#0F0" /&gt;</span></code></pre></div>
 <p>The green box is now twice as wide as each of the others. There are 2 + 1 + 1 = 4 shares, so it takes half the row and the other two take a quarter each.</p>
 <figure><img src="assets/img/fig47.png" alt="Sketch: the green box takes half the row, the blue and cyan boxes a quarter each" width="173" loading="lazy"></figure></li>
 <li>Now <strong>nest</strong> one layout inside another. A single LinearLayout is either a column or a row, but many screens need both: a column of fields with a row of buttons at the bottom. You get that by putting a <em>horizontal</em> LinearLayout inside a <em>vertical</em> one. Replace the whole file with the layout below:
@@ -194,7 +191,7 @@
 <ul>
   <li>Why does a view that uses <code>layout_weight</code> in a row get <code>layout_width="0dp"</code>?</li>
   <li>Two buttons have weights 2 and 1. What fraction of the row does each one get?</li>
-  <li>Which LinearLayout in step 19 decides that the buttons sit <em>below</em> the field, and which decides that they sit <em>beside</em> each other?</li>
+  <li>Which LinearLayout in step 18 decides that the buttons sit <em>below</em> the field, and which decides that they sit <em>beside</em> each other?</li>
 </ul>
 </aside>
 
@@ -219,7 +216,7 @@
 
 <aside class="callout tip">
 <p class="callout-title">Hint</p>
-<p>Start from the layout you built in step 19. It already has the shape you need: a vertical LinearLayout with a horizontal one inside it. The finished layout has this structure:</p>
+<p>Start from the layout you built in step 18. It already has the shape you need: a vertical LinearLayout with a horizontal one inside it. The finished layout has this structure:</p>
 <div class="code"><div class="code-head"><span class="code-file">structure (not XML)</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">LinearLayout   vertical, id = main</span><span class="line">├── EditText       hint "Username"</span><span class="line">├── EditText       hint "Password", textPassword</span><span class="line">└── LinearLayout   horizontal</span><span class="line">    ├── Button     LOGIN    weight 2</span><span class="line">    └── Button     SIGN UP  weight 1</span></code></pre></div>
 </aside>
 </section>
@@ -245,14 +242,14 @@
 
 <aside class="callout predict">
 <p class="callout-title">Predict first</p>
-<p>In the next step you add a 100dp margin around the <strong>first</strong> TextView only. What do you think will happen to the <strong>second</strong> TextView?</p>
+<p>In the next step you add a 10dp margin around the <strong>first</strong> TextView only. What do you think will happen to the <strong>second</strong> TextView?</p>
 </aside>
 
 <ol class="steps" start="6" style="--start:5">
 <li>Add a margin to the first TextView:
-<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;TextView</span><span class="line">    android:id="@+id/textView1"</span><span class="line">    android:layout_width="match_parent"</span><span class="line">    android:layout_height="wrap_content"</span><span class="line hl">    android:layout_margin="100dp"</span><span class="line">    android:background="#0F0"</span><span class="line">    android:text="Hello World!" /&gt;</span></code></pre></div></li>
+<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;TextView</span><span class="line">    android:id="@+id/textView1"</span><span class="line">    android:layout_width="match_parent"</span><span class="line">    android:layout_height="wrap_content"</span><span class="line hl">    android:layout_margin="10dp"</span><span class="line">    android:background="#0F0"</span><span class="line">    android:text="Hello World!" /&gt;</span></code></pre></div></li>
 <li>Look at the output. The second TextView follows the first one: it stays <strong>below</strong> it and <strong>aligned with its right edge</strong>, even though you did not change the second TextView at all.
-<figure><img src="assets/img/fig17.png" alt="Both TextViews moved inward by the 100dp margin" width="203" loading="lazy"></figure></li>
+<figure><img src="assets/img/fig17.png" alt="Both TextViews moved inward by the 10dp margin" width="203" loading="lazy"></figure></li>
 </ol>
 
 <aside class="callout checkpoint">
@@ -467,7 +464,7 @@
     <tr><td>Red “This view is not constrained” error</td><td>A view inside a ConstraintLayout needs at least one horizontal and one vertical constraint.</td></tr>
     <tr><td>View is in the right place in Design but at the top-left when the app runs</td><td>The same missing-constraint problem as above. Add the missing constraint.</td></tr>
     <tr><td><code>app:layout_constraint...</code> attributes show as errors</td><td>They only work on children of a ConstraintLayout. Remove them when you change the parent to LinearLayout or RelativeLayout.</td></tr>
-    <tr><td>Yellow warning on <code>android:text="..."</code></td><td>The text is hard-coded. Move it to <code>strings.xml</code> for the post-lab. It is fine to ignore while experimenting.</td></tr>
+    <tr><td>Yellow warning on <code>android:text="..."</code></td><td>The text is hard-coded instead of coming from <code>strings.xml</code>. It is fine to ignore in this lab.</td></tr>
     <tr><td>Spinner shows nothing</td><td>It has no items. Add <code>android:entries="@array/..."</code> with a <code>string-array</code> in <code>strings.xml</code>.</td></tr>
     <tr><td>Preview is blank or shows “Waiting for build...”</td><td>Click <strong>Build › Make Project</strong> once, or the refresh icon in the Design toolbar.</td></tr>
   </tbody>
@@ -487,7 +484,6 @@
   <li>The root layout is a <strong>ConstraintLayout</strong> with no constraint errors.</li>
   <li>An <strong>ImageView</strong> with your photo (or an avatar). Copy the image file into <strong>res › drawable</strong> (the file name must use only lowercase letters, digits and underscores, for example <code>my_photo.jpg</code>), then set <code>android:src="@drawable/my_photo"</code> and a <code>contentDescription</code>.</li>
   <li>At least <strong>five</strong> pieces of information, for example name, programme, address or hometown, hobbies, a favourite quote, skills.</li>
-  <li>All visible text comes from <code>strings.xml</code>.</li>
   <li>Text sizes use <code>sp</code> and all other sizes use <code>dp</code>.</li>
   <li>The screen still looks reasonable on a <strong>different device size</strong> in the preview (include one extra screenshot to show it).</li>
 </ul>
@@ -500,7 +496,7 @@
 <table class="marks">
   <thead><tr><th>Criterion</th><th>What earns full marks</th><th>Marks</th></tr></thead>
   <tbody>
-    <tr><td>Completeness</td><td>All requirements above are met; the layout has no constraint errors or hard-coded strings; both screenshots and the XML are included.</td><td>/5</td></tr>
+    <tr><td>Completeness</td><td>All requirements above are met; the layout has no constraint errors; both screenshots and the XML are included.</td><td>/5</td></tr>
     <tr><td>Creativity</td><td>A clear visual hierarchy (the name stands out), consistent spacing and alignment, a deliberate colour scheme, and at least one idea beyond the basics (for example a card background, icons, a chain or a guideline).</td><td>/5</td></tr>
   </tbody>
   <tfoot><tr><td colspan="2">Total</td><td>/10</td></tr></tfoot>
