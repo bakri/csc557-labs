@@ -464,7 +464,7 @@
     <tr><td>Red “This view is not constrained” error</td><td>A view inside a ConstraintLayout needs at least one horizontal and one vertical constraint.</td></tr>
     <tr><td>View is in the right place in Design but at the top-left when the app runs</td><td>The same missing-constraint problem as above. Add the missing constraint.</td></tr>
     <tr><td><code>app:layout_constraint...</code> attributes show as errors</td><td>They only work on children of a ConstraintLayout. Remove them when you change the parent to LinearLayout or RelativeLayout.</td></tr>
-    <tr><td>Yellow warning on <code>android:text="..."</code></td><td>The text is hard-coded. Move it to <code>strings.xml</code> for the post-lab. It is fine to ignore while experimenting.</td></tr>
+    <tr><td>Yellow warning on <code>android:text="..."</code></td><td>The text is hard-coded instead of coming from <code>strings.xml</code>. It is fine to ignore in this lab.</td></tr>
     <tr><td>Spinner shows nothing</td><td>It has no items. Add <code>android:entries="@array/..."</code> with a <code>string-array</code> in <code>strings.xml</code>.</td></tr>
     <tr><td>Preview is blank or shows “Waiting for build...”</td><td>Click <strong>Build › Make Project</strong> once, or the refresh icon in the Design toolbar.</td></tr>
   </tbody>
@@ -484,7 +484,6 @@
   <li>The root layout is a <strong>ConstraintLayout</strong> with no constraint errors.</li>
   <li>An <strong>ImageView</strong> with your photo (or an avatar). Copy the image file into <strong>res › drawable</strong> (the file name must use only lowercase letters, digits and underscores, for example <code>my_photo.jpg</code>), then set <code>android:src="@drawable/my_photo"</code> and a <code>contentDescription</code>.</li>
   <li>At least <strong>five</strong> pieces of information, for example name, programme, address or hometown, hobbies, a favourite quote, skills.</li>
-  <li>All visible text comes from <code>strings.xml</code>.</li>
   <li>Text sizes use <code>sp</code> and all other sizes use <code>dp</code>.</li>
   <li>The screen still looks reasonable on a <strong>different device size</strong> in the preview (include one extra screenshot to show it).</li>
 </ul>
@@ -497,7 +496,7 @@
 <table class="marks">
   <thead><tr><th>Criterion</th><th>What earns full marks</th><th>Marks</th></tr></thead>
   <tbody>
-    <tr><td>Completeness</td><td>All requirements above are met; the layout has no constraint errors or hard-coded strings; both screenshots and the XML are included.</td><td>/5</td></tr>
+    <tr><td>Completeness</td><td>All requirements above are met; the layout has no constraint errors; both screenshots and the XML are included.</td><td>/5</td></tr>
     <tr><td>Creativity</td><td>A clear visual hierarchy (the name stands out), consistent spacing and alignment, a deliberate colour scheme, and at least one idea beyond the basics (for example a card background, icons, a chain or a guideline).</td><td>/5</td></tr>
   </tbody>
   <tfoot><tr><td colspan="2">Total</td><td>/10</td></tr></tfoot>
