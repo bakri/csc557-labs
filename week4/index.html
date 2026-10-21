@@ -154,14 +154,50 @@
 </ul>
 </aside>
 
-<aside class="callout tip">
-<p class="callout-title">Tip</p>
-<p><strong>Sharing space with <code>layout_weight</code>.</strong> In a horizontal LinearLayout, set a child's <code>layout_width</code> to <code>0dp</code> and give it a <code>layout_weight</code>. The free space is shared in proportion to the weights. For example, weights 2 and 1 give two-thirds and one-third of the row. (In a vertical layout, use <code>layout_height="0dp"</code> instead.) You will need this in Exercise 1.</p>
+</section>
+
+<section class="step" id="weights-and-nesting" data-minutes="15">
+<h2>Activity 1: Weights and nesting</h2>
+<p>Exercise 1 asks for two new ideas: sharing a row with <strong>weights</strong>, and putting one LinearLayout <strong>inside</strong> another. You will try both here, step by step, on the same project.</p>
+
+<ol class="steps" start="17" style="--start:16">
+<li>Your row of three boxes is still there, each <code>wrap_content</code> wide. To make the boxes share the <strong>whole</strong> row, set every TextView's <code>layout_width</code> to <code>0dp</code> and give each one <code>layout_weight="1"</code>:
+<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;TextView</span><span class="line hl">    android:layout_width="0dp"</span><span class="line">    android:layout_height="wrap_content"</span><span class="line hl">    android:layout_weight="1"</span><span class="line">    ... /&gt;</span></code></pre></div>
+<p>The three boxes are now exactly the same width and together fill the row. <code>0dp</code> means “I take no width of my own”, and the weights decide how the free space is shared: 1 + 1 + 1 = 3 shares, so each box gets one third.</p></li>
+</ol>
+
+<aside class="callout predict">
+<p class="callout-title">Predict first</p>
+<p>In the next step the first box gets <code>layout_weight="2"</code> and the other two keep <code>1</code>. What fraction of the row will the first box take?</p>
+</aside>
+
+<ol class="steps" start="18" style="--start:17">
+<li>Change the weight of the <strong>first</strong> TextView only:
+<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;TextView</span><span class="line">    android:layout_width="0dp"</span><span class="line">    android:layout_height="wrap_content"</span><span class="line hl">    android:layout_weight="2"</span><span class="line">    android:text="@string/my_name"</span><span class="line">    android:background="#0F0" /&gt;</span></code></pre></div>
+<p>The green box is now twice as wide as each of the others. There are 2 + 1 + 1 = 4 shares, so it takes half the row and the other two take a quarter each.</p></li>
+<li>Now <strong>nest</strong> one layout inside another. A single LinearLayout is either a column or a row, but many screens need both: a column of fields with a row of buttons at the bottom. You get that by putting a <em>horizontal</em> LinearLayout inside a <em>vertical</em> one. Replace the whole file with the layout below:
+<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span><span class="line">&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"</span><span class="line">    xmlns:tools="http://schemas.android.com/tools"</span><span class="line">    android:id="@+id/main"</span><span class="line">    android:layout_width="match_parent"</span><span class="line">    android:layout_height="match_parent"</span><span class="line hl">    android:orientation="vertical"</span><span class="line">    tools:context=".MainActivity"&gt;</span><span class="line">&#8203;</span><span class="line hl">    &lt;EditText</span><span class="line hl">        android:layout_width="match_parent"</span><span class="line hl">        android:layout_height="wrap_content"</span><span class="line hl">        android:hint="Search"</span><span class="line hl">        android:inputType="text" /&gt;</span><span class="line">&#8203;</span><span class="line hl">    &lt;LinearLayout</span><span class="line hl">        android:layout_width="match_parent"</span><span class="line hl">        android:layout_height="wrap_content"</span><span class="line hl">        android:orientation="horizontal"&gt;</span><span class="line">&#8203;</span><span class="line hl">        &lt;Button</span><span class="line hl">            android:layout_width="0dp"</span><span class="line hl">            android:layout_height="wrap_content"</span><span class="line hl">            android:layout_weight="1"</span><span class="line hl">            android:text="OK" /&gt;</span><span class="line">&#8203;</span><span class="line hl">        &lt;Button</span><span class="line hl">            android:layout_width="0dp"</span><span class="line hl">            android:layout_height="wrap_content"</span><span class="line hl">            android:layout_weight="1"</span><span class="line hl">            android:text="Cancel" /&gt;</span><span class="line">&#8203;</span><span class="line hl">    &lt;/LinearLayout&gt;</span><span class="line">&#8203;</span><span class="line">&lt;/LinearLayout&gt;</span></code></pre></div></li>
+<li>Look at the preview and match it to the XML:
+<ul>
+  <li>The outer, <strong>vertical</strong> LinearLayout stacks two children: the EditText, then the inner LinearLayout.</li>
+  <li>The inner, <strong>horizontal</strong> LinearLayout puts the two Buttons side by side, and their equal weights make them the same width.</li>
+  <li>An <strong>EditText</strong> is a text field the user can type into. <code>hint</code> is the grey text shown while the field is empty, and it disappears as soon as the user types.</li>
+  <li><code>inputType</code> tells Android what kind of text to expect. <code>text</code> is ordinary text; <code>textPassword</code> shows dots instead of the letters.</li>
+</ul></li>
+</ol>
+
+<aside class="callout checkpoint">
+<p class="callout-title">Checkpoint</p>
+<ul>
+  <li>Why does a view that uses <code>layout_weight</code> in a row get <code>layout_width="0dp"</code>?</li>
+  <li>Two buttons have weights 2 and 1. What fraction of the row does each one get?</li>
+  <li>Which LinearLayout in step 19 decides that the buttons sit <em>below</em> the field, and which decides that they sit <em>beside</em> each other?</li>
+</ul>
 </aside>
 
 <aside class="callout stretch">
 <p class="callout-title">Stretch challenge <span>optional, no marks</span></p>
-<p>Using only what you learned above, make the three boxes into a <strong>flag with three equal stripes</strong> that fills the whole screen (for example Germany, the Netherlands or Indonesia plus one stripe). Hint: <code>0dp</code> + <code>layout_weight="1"</code> on each stripe. Then try a flag where one stripe is twice as tall as the others.</p>
+<p>Using only what you learned in this activity, make three boxes into a <strong>flag with three equal stripes</strong> that fills the whole screen (for example Germany, the Netherlands or Indonesia plus one stripe). Hint: in a vertical layout use <code>layout_height="0dp"</code> + <code>layout_weight="1"</code> on each stripe. Then try a flag where one stripe is twice as tall as the others.</p>
 </aside>
 </section>
 
@@ -177,6 +213,12 @@
   <li>Keep <code>android:id="@+id/main"</code> on the root layout.</li>
 </ul>
 </div>
+
+<aside class="callout tip">
+<p class="callout-title">Hint</p>
+<p>Start from the layout you built in step 19. It already has the shape you need: a vertical LinearLayout with a horizontal one inside it. The finished layout has this structure:</p>
+<div class="code"><div class="code-head"><span class="code-file">structure (not XML)</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">LinearLayout   vertical, id = main</span><span class="line">├── EditText       hint "Username"</span><span class="line">├── EditText       hint "Password", textPassword</span><span class="line">└── LinearLayout   horizontal</span><span class="line">    ├── Button     LOGIN    weight 2</span><span class="line">    └── Button     SIGN UP  weight 1</span></code></pre></div>
+</aside>
 </section>
 
 <section class="step" id="relative-layout" data-minutes="10">
