@@ -311,3 +311,34 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
   .nav .back[hidden] + .next { margin-left: auto; }
 }
 @media (prefers-reduced-motion: reduce) { .sidebar { transition: none; } }
+
+/* Syntax colours (Android Studio-like) */
+.tok-keyword { color: #0033b3; }
+.tok-string { color: #067d17; }
+.tok-comment { color: #8c8c8c; font-style: italic; }
+.tok-annotation { color: #9e880d; }
+.tok-number { color: #1750eb; }
+.tok-method { color: #00627a; }
+.tok-type { color: #000000; }
+.tok-tag { color: #0033b3; }
+.tok-attr { color: #871094; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .tok-keyword { color: #cf8e6d; }
+  :root:not([data-theme="light"]) .tok-string { color: #6aab73; }
+  :root:not([data-theme="light"]) .tok-comment { color: #8b8e94; }
+  :root:not([data-theme="light"]) .tok-annotation { color: #b3ae60; }
+  :root:not([data-theme="light"]) .tok-number { color: #2aacb8; }
+  :root:not([data-theme="light"]) .tok-method { color: #56a8f5; }
+  :root:not([data-theme="light"]) .tok-type { color: #e8eaed; }
+  :root:not([data-theme="light"]) .tok-tag { color: #d5b778; }
+  :root:not([data-theme="light"]) .tok-attr { color: #c77dbb; }
+}
+:root[data-theme="dark"] .tok-keyword { color: #cf8e6d; }
+:root[data-theme="dark"] .tok-string { color: #6aab73; }
+:root[data-theme="dark"] .tok-comment { color: #8b8e94; }
+:root[data-theme="dark"] .tok-annotation { color: #b3ae60; }
+:root[data-theme="dark"] .tok-number { color: #2aacb8; }
+:root[data-theme="dark"] .tok-method { color: #56a8f5; }
+:root[data-theme="dark"] .tok-type { color: #e8eaed; }
+:root[data-theme="dark"] .tok-tag { color: #d5b778; }
+:root[data-theme="dark"] .tok-attr { color: #c77dbb; }
