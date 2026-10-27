@@ -84,6 +84,85 @@
     root.classList.remove('nav-open');
   });
 
+  // Syntax colouring for Java and XML code blocks. Works line by line so the
+  // yellow "new line" highlight and the Copy button are unaffected.
+  var JAVA_KW = /^(abstract|boolean|break|byte|case|catch|char|class|continue|default|do|double|else|enum|extends|final|finally|float|for|if|implements|import|instanceof|int|interface|long|new|null|package|private|protected|public|return|short|static|super|switch|this|throw|throws|true|false|try|void|while)$/;
+  var JAVA_RE = /(\/\/.*$)|(\/\*.*?(?:\*\/|$))|("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')|(@[A-Za-z_]\w*)|(\b\d+(?:\.\d+)?[fFlLdD]?\b)|([A-Za-z_]\w*)(?=\s*\()|([A-Za-z_]\w*)/g;
+  var XML_RE = /(<!--.*?(?:-->|$))|(<\/?[\w.:-]+)|([\w.:-]+)(?==)|("[^"]*"?)|(\/?>)/g;
+
+  function langOf(block) {
+    var file = (block.querySelector('.code-file') || {}).textContent || '';
+    if (/\.xml\b/i.test(file)) return 'xml';
+    if (/\.java\b/i.test(file)) return 'java';
+    if (/logcat/i.test(file)) return null;
+    var first = (block.querySelector('.line') || {}).textContent || '';
+    return /^\s*</.test(first) ? 'xml' : 'java';
+  }
+
+  function paint(line, text, re, classify) {
+    var frag = document.createDocumentFragment(), last = 0, m;
+    re.lastIndex = 0;
+    while ((m = re.exec(text))) {
+      if (m[0] === '') { re.lastIndex++; continue; }
+      var cls = classify(m);
+      if (m.index > last) frag.appendChild(document.createTextNode(text.slice(last, m.index)));
+      if (cls) {
+        var span = document.createElement('span');
+        span.className = 'tok-' + cls;
+        span.textContent = m[0];
+        frag.appendChild(span);
+      } else {
+        frag.appendChild(document.createTextNode(m[0]));
+      }
+      last = m.index + m[0].length;
+    }
+    if (last < text.length) frag.appendChild(document.createTextNode(text.slice(last)));
+    line.appendChild(frag);
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('.code'), function (block) {
+    var lang = langOf(block);
+    if (!lang) return;
+    var inComment = false;
+    Array.prototype.forEach.call(block.querySelectorAll('.line'), function (line) {
+      var text = line.textContent;
+      if (text === '​' || line.classList.contains('cm')) return;
+      if (lang === 'java') {
+        line.textContent = '';
+        // a line inside a /* ... */ comment that started on an earlier line
+        if (inComment) {
+          var end = text.indexOf('*/');
+          var head = end < 0 ? text : text.slice(0, end + 2);
+          paint(line, head, /^[\s\S]+$/g, function () { return 'comment'; });
+          if (end < 0) return;
+          text = text.slice(end + 2);
+          inComment = false;
+        }
+        var bare = text.replace(/"(?:[^"\\]|\\.)*"/g, '""').replace(/\/\/.*$/, '');
+        var open = bare.lastIndexOf('/*');
+        if (open >= 0 && bare.indexOf('*/', open) < 0) inComment = true;
+        paint(line, text, JAVA_RE, function (m) {
+          if (m[1] || m[2]) return 'comment';
+          if (m[3]) return 'string';
+          if (m[4]) return 'annotation';
+          if (m[5]) return 'number';
+          if (m[6]) return JAVA_KW.test(m[6]) ? 'keyword' : 'method';
+          if (m[7]) return JAVA_KW.test(m[7]) ? 'keyword' : (/^[A-Z]/.test(m[7]) ? 'type' : null);
+          return null;
+        });
+      } else {
+        line.textContent = '';
+        paint(line, text, XML_RE, function (m) {
+          if (m[1]) return 'comment';
+          if (m[2] || m[5]) return 'tag';
+          if (m[3]) return 'attr';
+          if (m[4]) return 'string';
+          return null;
+        });
+      }
+    });
+  });
+
   // Copy buttons copy the whole block, without highlight markup.
   Array.prototype.forEach.call(document.querySelectorAll('.code'), function (block) {
     var btn = block.querySelector('.copy');
