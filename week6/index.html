@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>User Interaction Lab</title>
+<meta name="description" content="Week 6 lab for CSC557 Mobile Programming: input controls, reading and validating input, focus, AlertDialog, ScrollView and a date picker, building a TDEE calculator (Java, XML Views).">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/codelab.css?v=2">
+<style>.line.cm { color: var(--muted); font-style: italic; }</style>
+</head>
+<body data-title="User Interaction Lab">
+<header class="topbar">
+  <button class="menu-btn" id="menu" type="button" aria-label="Show steps"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></button>
+  <div class="topbar-title"><h1>User Interaction Lab: Input Controls and Dialogs</h1><div class="course">CSC557 Mobile Programming · Week 6</div></div>
+  <div class="remaining"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7z"/></svg><span><span id="remaining-min">0</span> min<span class="txt-long"> remaining</span></span></div>
+</header>
+<div class="shell">
+  <nav class="sidebar" aria-label="Lab steps"><ol class="toc" id="toc"></ol></nav>
+  <div class="scrim" id="scrim"></div>
+  <main>
+<section class="step" id="introduction" data-minutes="5">
+<h2>Introduction</h2>
+<p class="eyebrow">Lab Activity 5 · Week 6 · CSC557 Mobile Programming</p>
+<h3>Objectives</h3>
+<ul class="checklist">
+<li>Using input controls: <code>EditText</code>, <code>RadioButton</code>, <code>Switch</code>, <code>Spinner</code> and <code>CheckBox</code></li><li>Reading values from input controls and responding to taps with <code>android:onClick</code> and listeners</li><li>Validating input and guiding the user with focus</li><li>Showing a result in an <code>AlertDialog</code></li><li>Scrolling a long form with <code>ScrollView</code></li><li>Picking a date with a <code>DatePickerDialog</code> in a <code>DialogFragment</code></li>
+</ul>
+<p><strong>Duration:</strong> 2 hours. <strong>You need:</strong> Android Studio and an emulator or Android phone.</p>
+<div class="table-wrap"><table class="marks">
+<thead><tr><th><strong>Part</strong></th><th><strong>What you do</strong></th><th><strong>Time</strong></th><th><strong>Marks</strong></th></tr></thead>
+<tbody>
+<tr><td>Activity 1: Designing the form</td><td>Build the TDEE form with a GridLayout</td><td>25 min</td><td>–</td></tr>
+<tr><td>Activity 2: Reading input values</td><td>React to the Switch and calculate the TDEE</td><td>25 min</td><td>–</td></tr>
+<tr><td>Activity 3: Validating input</td><td>Stop the crash on empty fields and move the focus</td><td>20 min</td><td>–</td></tr>
+<tr><td>Activity 4: AlertDialog</td><td>Show the result in a dialog with OK and Reset</td><td>20 min</td><td>–</td></tr>
+<tr><td>Activity 5: ScrollView</td><td>Make the form scroll in landscape</td><td>10 min</td><td>–</td></tr>
+<tr><td>Activity 6: Date picker</td><td>Pick a birth date to fill in the age</td><td>20 min</td><td>–</td></tr>
+<tr><td>Post-Lab (after the lab)</td><td>Build the Kopi Order app on your own</td><td>–</td><td>10</td></tr>
+<tr><td><strong>Total</strong></td><td></td><td><strong>120 min</strong></td><td><strong>10</strong></td></tr>
+</tbody>
+</table></div>
+<p><em>The questions in the activities are for class discussion and are not marked. Only the Post-Lab is marked (10 marks).</em></p>
+<p>In this lab you build an Android app that uses several input controls to calculate a person’s <strong>TDEE</strong>. TDEE stands for Total Daily Energy Expenditure: the total number of calories you burn each day. Four key factors determine your TDEE:</p>
+<ul>
+<li>Basal Metabolic Rate (BMR)</li>
+<li>Thermic Effect of Food</li>
+<li>Non-Exercise Activity Thermogenesis</li>
+<li>Thermic Effect of Activity (exercise)</li>
+</ul>
+<p>Our app estimates the BMR from gender, height, weight and age, and then multiplies it by an activity factor. You build the app step by step in one project, so keep the same project open for all six activities.</p>
+</section>
+
+<section class="step" id="activity-1-designing-the-form" data-minutes="25">
+<h2>Activity 1 – Designing the form</h2>
+<ol class="steps">
+<li>Create a new Android project named <code>TDEECalculator</code> using the <strong>Java</strong> language. Choose <strong>Empty Views Activity</strong> as the template.
+<figure><img src="assets/img/fig01.png" alt="Screenshot" width="150" loading="lazy"></figure>
+</li>
+<li>We start by designing the form. The user gives the calculator the following information, each with a suitable input control:
+<div class="table-wrap"><table>
+<thead><tr><th><strong>Information</strong></th><th><strong>Input control</strong></th></tr></thead>
+<tbody>
+<tr><td>Gender</td><td><code>RadioButton</code> (two of them inside a <code>RadioGroup</code>)</td></tr>
+<tr><td>Height (cm), Weight (kg), Age (years)</td><td><code>EditText</code> with a number <code>inputType</code></td></tr>
+<tr><td>Consider activity factors (on/off)</td><td><code>Switch</code></td></tr>
+<tr><td>Activity level (choose from a list)</td><td><code>Spinner</code></td></tr>
+</tbody>
+</table></div>
+<figure><img src="assets/img/fig02.png" alt="Screenshot" width="190" loading="lazy"></figure>
+</li>
+<li>Open <strong>res/layout/activity_main.xml</strong> in <strong>Code</strong> view and replace its content with a <strong>GridLayout</strong> of 8 rows and 2 columns. Column 0 holds the labels and column 1 holds the input controls.
+<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span><span class="line hl">&lt;GridLayout xmlns:android="http://schemas.android.com/apk/res/android"</span><span class="line">    xmlns:tools="http://schemas.android.com/tools"</span><span class="line">    android:id="@+id/main"</span><span class="line">    android:layout_width="match_parent"</span><span class="line">    android:layout_height="match_parent"</span><span class="line hl">    android:columnCount="2"</span><span class="line hl">    android:rowCount="8"</span><span class="line">    tools:context=".MainActivity"&gt;</span><span class="line">&#8203;</span><span class="line cm">    &lt;!-- the rows of the form go here --&gt;</span><span class="line">&#8203;</span><span class="line hl">&lt;/GridLayout&gt;</span></code></pre></div>
+<p>Keep <code>android:id="@+id/main"</code> on the root. The template’s MainActivity uses <code>R.id.main</code> to add padding for the status bar.</p>
+</li>
+<li>Add the first row for the Gender input. The two radio buttons are grouped in a <strong>RadioGroup</strong>, so the user can choose only one of them. Checking one radio button unchecks the other.
+<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml (inside the GridLayout)</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">    &lt;!-- Row 0: Gender --&gt;</span><span class="line hl">    &lt;TextView</span><span class="line hl">        android:id="@+id/tvGender"</span><span class="line hl">        android:layout_width="wrap_content"</span><span class="line hl">        android:layout_height="wrap_content"</span><span class="line hl">        android:layout_row="0"</span><span class="line hl">        android:layout_column="0"</span><span class="line hl">        android:layout_gravity="end|center_vertical"</span><span class="line hl">        android:layout_marginStart="50dp"</span><span class="line hl">        android:layout_marginTop="48dp"</span><span class="line hl">        android:text="Gender:"</span><span class="line hl">        android:textSize="18sp" /&gt;</span><span class="line hl">&#8203;</span><span class="line hl">    &lt;RadioGroup</span><span class="line hl">        android:id="@+id/rgGender"</span><span class="line hl">        android:layout_width="wrap_content"</span><span class="line hl">        android:layout_height="wrap_content"</span><span class="line hl">        android:layout_row="0"</span><span class="line hl">        android:layout_column="1"</span><span class="line hl">        android:layout_gravity="start"</span><span class="line hl">        android:layout_marginTop="48dp"</span><span class="line hl">        android:orientation="horizontal"&gt;</span><span class="line hl">&#8203;</span><span class="line hl">        &lt;RadioButton</span><span class="line hl">            android:id="@+id/rbMale"</span><span class="line hl">            android:layout_width="wrap_content"</span><span class="line hl">            android:layout_height="wrap_content"</span><span class="line hl">            android:text="Male" /&gt;</span><span class="line hl">&#8203;</span><span class="line hl">        &lt;RadioButton</span><span class="line hl">            android:id="@+id/rbFemale"</span><span class="line hl">            android:layout_width="wrap_content"</span><span class="line hl">            android:layout_height="wrap_content"</span><span class="line hl">            android:layout_marginStart="20dp"</span><span class="line hl">            android:text="Female" /&gt;</span><span class="line hl">    &lt;/RadioGroup&gt;</span></code></pre></div>
+</li>
+<li>Add the second, third and fourth rows for the Height, Weight and Age inputs. The <code>inputType</code> decides which keyboard appears: <code>number</code> shows digits only and <code>numberDecimal</code> also allows a decimal point. The <code>hint</code> is grey text that disappears when the user types.
+<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml (inside the GridLayout, after the RadioGroup)</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">    &lt;!-- Row 1: Height --&gt;</span><span class="line hl">    &lt;TextView</span><span class="line hl">        android:layout_width="wrap_content"</span><span class="line hl">        android:layout_height="wrap_content"</span><span class="line hl">        android:layout_row="1"</span><span class="line hl">        android:layout_column="0"</span><span class="line hl">        android:layout_gravity="end|center_vertical"</span><span class="line hl">        android:text="Height (cm):"</span><span class="line hl">        android:textSize="18sp" /&gt;</span><span class="line hl">&#8203;</span><span class="line hl">    &lt;EditText</span><span class="line hl">        android:id="@+id/etHeight"</span><span class="line hl">        android:layout_width="wrap_content"</span><span class="line hl">        android:layout_height="wrap_content"</span><span class="line hl">        android:layout_row="1"</span><span class="line hl">        android:layout_column="1"</span><span class="line hl">        android:layout_columnWeight="1"</span><span class="line hl">        android:layout_marginEnd="50dp"</span><span class="line hl">        android:hint="e.g. 170"</span><span class="line hl">        android:inputType="number" /&gt;</span><span class="line hl">&#8203;</span><span class="line hl">    &lt;!-- Row 2: Weight --&gt;</span><span class="line hl">    &lt;TextView</span><span class="line hl">        android:layout_width="wrap_content"</span><span class="line hl">        android:layout_height="wrap_content"</span><span class="line hl">        android:layout_row="2"</span><span class="line hl">        android:layout_column="0"</span><span class="line hl">        android:layout_gravity="end|center_vertical"</span><span class="line hl">        android:text="Weight (kg):"</span><span class="line hl">        android:textSize="18sp" /&gt;</span><span class="line hl">&#8203;</span><span class="line hl">    &lt;EditText</span><span class="line hl">        android:id="@+id/etWeight"</span><span class="line hl">        android:layout_width="wrap_content"</span><span class="line hl">        android:layout_height="wrap_content"</span><span class="line hl">        android:layout_row="2"</span><span class="line hl">        android:layout_column="1"</span><span class="line hl">        android:layout_columnWeight="1"</span><span class="line hl">        android:layout_marginEnd="50dp"</span><span class="line hl">        android:hint="e.g. 65.5"</span><span class="line hl">        android:inputType="numberDecimal" /&gt;</span><span class="line hl">&#8203;</span><span class="line hl">    &lt;!-- Row 3: Age --&gt;</span><span class="line hl">    &lt;TextView</span><span class="line hl">        android:layout_width="wrap_content"</span><span class="line hl">        android:layout_height="wrap_content"</span><span class="line hl">        android:layout_row="3"</span><span class="line hl">        android:layout_column="0"</span><span class="line hl">        android:layout_gravity="end|center_vertical"</span><span class="line hl">        android:text="Age (years):"</span><span class="line hl">        android:textSize="18sp" /&gt;</span><span class="line hl">&#8203;</span><span class="line hl">    &lt;EditText</span><span class="line hl">        android:id="@+id/etAge"</span><span class="line hl">        android:layout_width="wrap_content"</span><span class="line hl">        android:layout_height="wrap_content"</span><span class="line hl">        android:layout_row="3"</span><span class="line hl">        android:layout_column="1"</span><span class="line hl">        android:layout_columnWeight="1"</span><span class="line hl">        android:layout_marginEnd="50dp"</span><span class="line hl">        android:hint="e.g. 21"</span><span class="line hl">        android:inputType="number" /&gt;</span></code></pre></div>
+<p><code>layout_columnWeight="1"</code> lets column 1 take the free width, so the EditText fields stretch to the right margin.</p>
+</li>
+<li>For the fifth input, the user can switch on or off whether to include activity factors in the TDEE. We use a <strong>Switch</strong> for this. In Activity 2, toggling it will enable or disable the activity level list. The Switch spans both columns (<code>layout_columnSpan="2"</code>).
+<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml (inside the GridLayout)</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">    &lt;!-- Row 4: Consider Activity Factor switch --&gt;</span><span class="line hl">    &lt;Switch</span><span class="line hl">        android:id="@+id/swActivityFactor"</span><span class="line hl">        android:layout_width="wrap_content"</span><span class="line hl">        android:layout_height="wrap_content"</span><span class="line hl">        android:layout_row="4"</span><span class="line hl">        android:layout_column="0"</span><span class="line hl">        android:layout_columnSpan="2"</span><span class="line hl">        android:layout_gravity="center"</span><span class="line hl">        android:checked="true"</span><span class="line hl">        android:text="Activity Factor"</span><span class="line hl">        android:textColor="#808080"</span><span class="line hl">        android:textSize="18sp" /&gt;</span></code></pre></div>
+<aside class="callout tip">
+<p class="callout-title">Tip</p>
+<p>Android Studio may underline <code>&lt;Switch&gt;</code> and suggest <code>SwitchCompat</code> or <code>MaterialSwitch</code>. That is only a style warning: the plain Switch works for this lab.</p>
+</aside>
+</li>
+<li>For the last input, the user chooses an activity level from a list. We use a <strong>Spinner</strong>: it shows the selected item and opens a drop-down list when tapped.
+<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml (inside the GridLayout)</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">    &lt;!-- Row 5: Activity Level --&gt;</span><span class="line hl">    &lt;TextView</span><span class="line hl">        android:layout_width="wrap_content"</span><span class="line hl">        android:layout_height="wrap_content"</span><span class="line hl">        android:layout_row="5"</span><span class="line hl">        android:layout_column="0"</span><span class="line hl">        android:layout_gravity="end|center_vertical"</span><span class="line hl">        android:text="Activity Level:"</span><span class="line hl">        android:textSize="18sp" /&gt;</span><span class="line hl">&#8203;</span><span class="line hl">    &lt;Spinner</span><span class="line hl">        android:id="@+id/spActivityLevel"</span><span class="line hl">        android:layout_width="wrap_content"</span><span class="line hl">        android:layout_height="wrap_content"</span><span class="line hl">        android:layout_row="5"</span><span class="line hl">        android:layout_column="1"</span><span class="line hl">        android:layout_columnWeight="1"</span><span class="line hl">        android:layout_gravity="center_horizontal"</span><span class="line hl">        android:layout_marginEnd="50dp" /&gt;</span></code></pre></div>
+</li>
+<li>There are two ways to put items in a Spinner. The first is to point the Spinner to an array resource with the <code>android:entries="@array/name"</code> attribute. It is simple, but we cannot change how each item looks (font size, colour, and so on). The second way is to give the Spinner an <strong>adapter</strong> in the Activity class, which we will learn in the ListView topic. In this lab we use the first way.
+</li>
+<li>Open <strong>res/values/strings.xml</strong> and add the array of activity levels inside <code>&lt;resources&gt;</code>:
+<div class="code"><div class="code-head"><span class="code-file">res/values/strings.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;resources&gt;</span><span class="line cm">    &lt;string name="app_name"&gt;TDEECalculator&lt;/string&gt;</span><span class="line hl">    &lt;string-array name="activity_levels"&gt;</span><span class="line hl">        &lt;item&gt;Sedentary&lt;/item&gt;</span><span class="line hl">        &lt;item&gt;Lightly Active&lt;/item&gt;</span><span class="line hl">        &lt;item&gt;Moderately Active&lt;/item&gt;</span><span class="line hl">        &lt;item&gt;Very Active&lt;/item&gt;</span><span class="line hl">        &lt;item&gt;Extremely Active&lt;/item&gt;</span><span class="line hl">    &lt;/string-array&gt;</span><span class="line">&lt;/resources&gt;</span></code></pre></div>
+</li>
+<li>Go back to <strong>activity_main.xml</strong> and set the Spinner entries to the <code>activity_levels</code> array:
+<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">    &lt;Spinner</span><span class="line">        android:id="@+id/spActivityLevel"</span><span class="line cm">        ... the other attributes stay ...</span><span class="line hl">        android:entries="@array/activity_levels" /&gt;</span></code></pre></div>
+</li>
+<li>Run the app. Tap the Spinner and check that it lists the five activity levels.
+<figure><img src="assets/img/fig03.png" alt="Screenshot" width="380" loading="lazy"></figure>
+</li>
+<li>Add a <strong>Calculate</strong> button in row 6. It spans both columns and sits in the centre.
+<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml (inside the GridLayout)</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">    &lt;!-- Row 6: Calculate button --&gt;</span><span class="line hl">    &lt;Button</span><span class="line hl">        android:id="@+id/btnCalculate"</span><span class="line hl">        android:layout_width="wrap_content"</span><span class="line hl">        android:layout_height="wrap_content"</span><span class="line hl">        android:layout_row="6"</span><span class="line hl">        android:layout_column="0"</span><span class="line hl">        android:layout_columnSpan="2"</span><span class="line hl">        android:layout_gravity="center_horizontal"</span><span class="line hl">        android:layout_marginTop="50dp"</span><span class="line hl">        android:text="Calculate" /&gt;</span></code></pre></div>
+</li>
+<li>Lastly, add a TextView in row 7 to display the result of the calculation.
+<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml (inside the GridLayout)</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">    &lt;!-- Row 7: TextView for displaying the result --&gt;</span><span class="line hl">    &lt;TextView</span><span class="line hl">        android:id="@+id/tvResult"</span><span class="line hl">        android:layout_width="wrap_content"</span><span class="line hl">        android:layout_height="wrap_content"</span><span class="line hl">        android:layout_row="7"</span><span class="line hl">        android:layout_column="0"</span><span class="line hl">        android:layout_columnSpan="2"</span><span class="line hl">        android:layout_rowWeight="1"</span><span class="line hl">        android:layout_gravity="center"</span><span class="line hl">        android:layout_marginStart="10dp"</span><span class="line hl">        android:layout_marginEnd="10dp"</span><span class="line hl">        android:layout_marginBottom="100dp"</span><span class="line hl">        android:text="Calculate your TDEE!"</span><span class="line hl">        android:textColor="#533333"</span><span class="line hl">        android:textSize="30sp" /&gt;</span></code></pre></div>
+</li>
+<li>Run your app. It should look like the picture in step 2. Tapping <strong>Calculate</strong> does nothing yet: we add the code in Activity 2.
+</li>
+</ol>
+</section>
+
+<section class="step" id="activity-2-reading-input-values" data-minutes="25">
+<h2>Activity 2 – Reading input values</h2>
+<p>The form is ready. Now we write the Java code that reacts to the user and calculates the TDEE. When the user taps <strong>Calculate</strong>, the app uses these formulas:</p>
+<ul>
+<li><strong>Men</strong> BMR = 66 + (13.7 × weight in kg) + (5 × height in cm) − (6.8 × age in years)</li>
+<li><strong>Women</strong> BMR = 655 + (9.6 × weight in kg) + (1.8 × height in cm) − (4.7 × age in years)</li>
+</ul>
+<p>If the Activity Factor switch is on, the BMR is multiplied by the factor of the level selected in the Spinner:</p>
+<div class="table-wrap"><table>
+<thead><tr><th><strong>#</strong></th><th><strong>Activity level</strong></th><th><strong>Meaning</strong></th><th><strong>Factor</strong></th></tr></thead>
+<tbody>
+<tr><td>0</td><td>Sedentary</td><td>little or no exercise, desk job</td><td>1.2</td></tr>
+<tr><td>1</td><td>Lightly Active</td><td>light exercise 1–3 days per week</td><td>1.375</td></tr>
+<tr><td>2</td><td>Moderately Active</td><td>moderate exercise 3–5 days per week</td><td>1.55</td></tr>
+<tr><td>3</td><td>Very Active</td><td>heavy exercise 6–7 days per week</td><td>1.725</td></tr>
+<tr><td>4</td><td>Extremely Active</td><td>very heavy exercise, hard labour job, training 2× per day</td><td>1.9</td></tr>
+</tbody>
+</table></div>
+<p>The # column is the position of the item in the Spinner. Positions start at 0.</p>
+<ol class="steps">
+<li>Open <strong>MainActivity.java</strong>. Declare the input controls as fields, get them with <code>findViewById()</code> at the end of <code>onCreate()</code>, and add a listener to the Switch that enables or disables the Spinner. Do not change the code the template generated.
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/tdeecalculator/MainActivity.java</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">package com.example.tdeecalculator;</span><span class="line">&#8203;</span><span class="line">import android.os.Bundle;</span><span class="line hl">import android.view.View;</span><span class="line hl">import android.widget.CompoundButton;</span><span class="line hl">import android.widget.EditText;</span><span class="line hl">import android.widget.RadioButton;</span><span class="line hl">import android.widget.Spinner;</span><span class="line hl">import android.widget.Switch;</span><span class="line hl">import android.widget.TextView;</span><span class="line cm">// ... the androidx imports from the template stay ...</span><span class="line">&#8203;</span><span class="line">public class MainActivity extends AppCompatActivity {</span><span class="line">&#8203;</span><span class="line hl">    // the views we use in this class</span><span class="line hl">    private RadioButton rbMale;</span><span class="line hl">    private EditText etHeight, etWeight, etAge;</span><span class="line hl">    private Switch swActivityFactor;</span><span class="line hl">    private Spinner spActivityLevel;</span><span class="line hl">    private TextView tvResult;</span><span class="line hl">&#8203;</span><span class="line">    @Override</span><span class="line">    protected void onCreate(Bundle savedInstanceState) {</span><span class="line">        super.onCreate(savedInstanceState);</span><span class="line">        EdgeToEdge.enable(this);</span><span class="line">        setContentView(R.layout.activity_main);</span><span class="line cm">        // ... the ViewCompat.setOnApplyWindowInsetsListener(...) code stays ...</span><span class="line">&#8203;</span><span class="line hl">        // get references to the UI elements in the layout</span><span class="line hl">        rbMale = findViewById(R.id.rbMale);</span><span class="line hl">        etHeight = findViewById(R.id.etHeight);</span><span class="line hl">        etWeight = findViewById(R.id.etWeight);</span><span class="line hl">        etAge = findViewById(R.id.etAge);</span><span class="line hl">        swActivityFactor = findViewById(R.id.swActivityFactor);</span><span class="line hl">        spActivityLevel = findViewById(R.id.spActivityLevel);</span><span class="line hl">        tvResult = findViewById(R.id.tvResult);</span><span class="line hl">&#8203;</span><span class="line hl">        // listen to switch value change (toggle on / off)</span><span class="line hl">        swActivityFactor.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {</span><span class="line hl">            @Override</span><span class="line hl">            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {</span><span class="line hl">                // if toggled on, enable, otherwise disable the activity level spinner</span><span class="line hl">                if (isChecked) {</span><span class="line hl">                    spActivityLevel.setEnabled(true);   // enable spinner</span><span class="line hl">                    spActivityLevel.setAlpha(1f);       // reset transparency</span><span class="line hl">                } else {</span><span class="line hl">                    spActivityLevel.setEnabled(false);  // disable spinner</span><span class="line hl">                    spActivityLevel.setAlpha(0.2f);     // make the spinner look disabled</span><span class="line hl">                }</span><span class="line hl">            }</span><span class="line hl">        });</span><span class="line">    }</span><span class="line">}</span></code></pre></div>
+<p>Yellow lines are the ones you add. Grey italic lines stand for code that is already there.</p>
+</li>
+<li>Run the app and test the switch. Turning it off should grey out the Activity Level Spinner so it cannot be opened. Turning it on enables it again.
+</li>
+<li>Open <strong>activity_main.xml</strong> and add the <code>android:onClick</code> attribute to the Calculate button. When the user taps the button, Android calls the method with this name in MainActivity.
+<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">    &lt;Button</span><span class="line">        android:id="@+id/btnCalculate"</span><span class="line cm">        ... the other attributes stay ...</span><span class="line hl">        android:onClick="calculateTDEE"</span><span class="line">        android:text="Calculate" /&gt;</span></code></pre></div>
+<aside class="callout tip">
+<p class="callout-title">Tip</p>
+<p>Hover the mouse over <code>calculateTDEE</code> and choose <strong>Create 'calculateTDEE(View)' in 'MainActivity'</strong> to let Android Studio write the method signature for you. The method must be <code>public void</code> and take one <code>View</code> parameter.</p>
+</aside>
+</li>
+<li>The <code>calculateTDEE()</code> method reads every input control, calculates the BMR, applies the activity factor and shows the result.
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/tdeecalculator/MainActivity.java (inside the class)</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">    /** Called when the user taps the Calculate button (android:onClick) */</span><span class="line hl">    public void calculateTDEE(View view) {</span><span class="line hl">        // read gender: isChecked() is true for the radio button the user chose</span><span class="line hl">        String gender;</span><span class="line hl">        if (rbMale.isChecked())</span><span class="line hl">            gender = "Male";</span><span class="line hl">        else</span><span class="line hl">            gender = "Female";</span><span class="line hl">&#8203;</span><span class="line hl">        // read height, weight and age: convert the text to a number</span><span class="line hl">        int height = Integer.parseInt(etHeight.getText().toString());</span><span class="line hl">        double weight = Double.parseDouble(etWeight.getText().toString());</span><span class="line hl">        int age = Integer.parseInt(etAge.getText().toString());</span><span class="line hl">&#8203;</span><span class="line hl">        // calculate BMR</span><span class="line hl">        double BMR;</span><span class="line hl">        if (gender.equals("Male"))</span><span class="line hl">            BMR = 66 + (13.7 * weight) + (5 * height) - (6.8 * age);</span><span class="line hl">        else</span><span class="line hl">            BMR = 655 + (9.6 * weight) + (1.8 * height) - (4.7 * age);</span><span class="line hl">&#8203;</span><span class="line hl">        // check Activity Factor</span><span class="line hl">        double TDEE = BMR;</span><span class="line hl">        if (swActivityFactor.isChecked()) {</span><span class="line hl">            // read spinner: the position of the selected item, starting at 0</span><span class="line hl">            int selectedIdx = spActivityLevel.getSelectedItemPosition();</span><span class="line hl">            double factor = 1;</span><span class="line hl">            switch (selectedIdx) {</span><span class="line hl">                case 0: factor = 1.2;   break;</span><span class="line hl">                case 1: factor = 1.375; break;</span><span class="line hl">                case 2: factor = 1.55;  break;</span><span class="line hl">                case 3: factor = 1.725; break;</span><span class="line hl">                case 4: factor = 1.9;   break;</span><span class="line hl">            }</span><span class="line hl">            // multiply by the factor</span><span class="line hl">            TDEE = TDEE * factor;</span><span class="line hl">        }</span><span class="line hl">&#8203;</span><span class="line hl">        // display result</span><span class="line hl">        tvResult.setText("You need to consume " + (int) TDEE</span><span class="line hl">                + " calories per day to maintain your current weight");</span><span class="line hl">    }</span></code></pre></div>
+</li>
+<li>Run your app. Choose <strong>Male</strong>, enter height <strong>171</strong>, weight <strong>74</strong>, age <strong>25</strong> and keep <strong>Sedentary</strong>. Tap <strong>Calculate</strong>: the result should be <strong>2117</strong> calories. Then switch Activity Factor off and tap Calculate again: the result is the BMR alone, <strong>1764</strong> calories.
+<figure><img src="assets/img/fig04.png" alt="Screenshot" width="380" loading="lazy"></figure>
+</li>
+</ol>
+</section>
+
+<section class="step" id="activity-3-validating-input-and-guiding-focus" data-minutes="20">
+<h2>Activity 3 – Validating input and guiding focus</h2>
+<p>Users make mistakes. A good form tells the user what is wrong and moves the cursor (the <strong>focus</strong>) to the field that needs fixing, instead of crashing.</p>
+<ol class="steps">
+<li>Run the app, choose a gender, leave <strong>Height</strong> empty and tap <strong>Calculate</strong>. The app stops. Open <strong>Logcat</strong>, type <code>level:error</code> in the filter box and find the red <strong>FATAL EXCEPTION</strong> lines. Read the exception name and the line of <code>MainActivity.java</code> it points to.
+</li>
+<li>Open <strong>MainActivity.java</strong>. Add a field for the RadioGroup, get it in <code>onCreate()</code>, and add two helper methods: <code>isEmpty()</code> checks one EditText, and <code>validateInputs()</code> checks the whole form.
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/tdeecalculator/MainActivity.java</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">import android.widget.RadioGroup;</span><span class="line hl">import android.widget.Toast;</span><span class="line cm">// ... the other imports stay ...</span><span class="line">&#8203;</span><span class="line">public class MainActivity extends AppCompatActivity {</span><span class="line">&#8203;</span><span class="line cm">    // ... the other fields stay ...</span><span class="line hl">    private RadioGroup rgGender;</span><span class="line">&#8203;</span><span class="line">    @Override</span><span class="line">    protected void onCreate(Bundle savedInstanceState) {</span><span class="line cm">        // ... the code from Activity 2 stays ...</span><span class="line hl">        rgGender = findViewById(R.id.rgGender);</span><span class="line">    }</span><span class="line">&#8203;</span><span class="line hl">    /** Shows an error on the EditText and returns true when it is empty */</span><span class="line hl">    private boolean isEmpty(EditText editText, String message) {</span><span class="line hl">        if (editText.getText().toString().trim().isEmpty()) {</span><span class="line hl">            editText.setError(message);   // red (!) icon with the message</span><span class="line hl">            editText.requestFocus();      // move the cursor to this field</span><span class="line hl">            return true;</span><span class="line hl">        }</span><span class="line hl">        return false;</span><span class="line hl">    }</span><span class="line hl">&#8203;</span><span class="line hl">    /** Returns true when every input has a value */</span><span class="line hl">    private boolean validateInputs() {</span><span class="line hl">        // getCheckedRadioButtonId() is -1 when no radio button is checked</span><span class="line hl">        if (rgGender.getCheckedRadioButtonId() == -1) {</span><span class="line hl">            Toast.makeText(this, "Please choose your gender", Toast.LENGTH_SHORT).show();</span><span class="line hl">            return false;</span><span class="line hl">        }</span><span class="line hl">        if (isEmpty(etHeight, "Please enter your height")) return false;</span><span class="line hl">        if (isEmpty(etWeight, "Please enter your weight")) return false;</span><span class="line hl">        if (isEmpty(etAge, "Please enter your age")) return false;</span><span class="line hl">        return true;</span><span class="line hl">    }</span><span class="line">&#8203;</span><span class="line cm">    // ... calculateTDEE() stays below ...</span></code></pre></div>
+</li>
+<li>Call <code>validateInputs()</code> at the start of <code>calculateTDEE()</code>. If a value is missing, the method stops with <code>return</code> before any number is converted.
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/tdeecalculator/MainActivity.java</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">    public void calculateTDEE(View view) {</span><span class="line hl">        // stop here if an input is missing: the user sees an error instead of a crash</span><span class="line hl">        if (!validateInputs()) {</span><span class="line hl">            return;</span><span class="line hl">        }</span><span class="line hl">&#8203;</span><span class="line">        // read gender: isChecked() is true for the radio button the user chose</span><span class="line cm">        // ... the rest of the method stays ...</span></code></pre></div>
+</li>
+<li>Run the app and test it: tap <strong>Calculate</strong> with no gender chosen, then with an empty height, weight or age. Each time you should see a message, and the cursor should jump to the empty field.
+<figure><img src="assets/img/fig05.png" alt="Screenshot" width="380" loading="lazy"></figure>
+</li>
+<li>Now look at how focus moves. Tap <strong>Height</strong> and type a number. On the keyboard, tap the <strong>Next</strong> key (the arrow at the bottom right). The focus moves to <strong>Weight</strong>, then to <strong>Age</strong>. Android moves the focus from top to bottom and left to right, following the layout.
+<aside class="callout tip">
+<p class="callout-title">Tip</p>
+<p>You can change the focus order in XML with <code>android:nextFocusDown="@id/..."</code>, and change the keyboard key with <code>android:imeOptions="actionNext"</code> or <code>"actionDone"</code>. In Java, <code>requestFocus()</code> gives the focus to a view, and <code>getCurrentFocus()</code> tells you which view has it.</p>
+</aside>
+</li>
+</ol>
+<div class="exercise">
+<p class="exercise-head"><span>Question 1: Checking the range</span></p>
+<p><strong>a.  </strong>Which exception did you see in Logcat in step 1, and which line of <code>calculateTDEE()</code> threw it?</p>
+<p><strong>b.  </strong>An empty field is not the only mistake. Extend <code>validateInputs()</code> so the values must also be in these ranges. Show the error with <code>setError()</code> on the wrong field and move the focus to it.</p>
+<ul><li>Height: 100 to 250 cm</li><li>Weight: 30 to 300 kg</li><li>Age: 10 to 100 years</li></ul>
+<p>Example message: “Height must be between 100 and 250 cm”.</p>
+</div>
+</section>
+
+<section class="step" id="activity-4-showing-the-result-in-an-alertdialog" data-minutes="20">
+<h2>Activity 4 – Showing the result in an AlertDialog</h2>
+<p>A <strong>dialog</strong> appears on top of the Activity and waits for the user to tap a button. An <strong>AlertDialog</strong> has an optional title, a content area (a message) and up to three action buttons: positive, negative and neutral. We use one to show the result, with <strong>OK</strong> to close it and <strong>Reset</strong> to clear the form for the next person.</p>
+<ol class="steps">
+<li>Add two methods to <strong>MainActivity.java</strong>: <code>showResultDialog()</code> builds and shows the dialog, and <code>resetForm()</code> clears every input.
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/tdeecalculator/MainActivity.java</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">import android.content.DialogInterface;</span><span class="line hl">import androidx.appcompat.app.AlertDialog;</span><span class="line cm">// ... the other imports stay ...</span><span class="line">&#8203;</span><span class="line cm">    // ... inside the class, after calculateTDEE() ...</span><span class="line hl">    /** Shows the result in an AlertDialog with two buttons */</span><span class="line hl">    private void showResultDialog(String message) {</span><span class="line hl">        AlertDialog.Builder builder = new AlertDialog.Builder(this);</span><span class="line hl">        builder.setTitle("Your TDEE");</span><span class="line hl">        builder.setMessage(message);</span><span class="line hl">        // positive button: null listener means the button just closes the dialog</span><span class="line hl">        builder.setPositiveButton("OK", null);</span><span class="line hl">        // negative button: clear the form</span><span class="line hl">        builder.setNegativeButton("Reset", new DialogInterface.OnClickListener() {</span><span class="line hl">            @Override</span><span class="line hl">            public void onClick(DialogInterface dialog, int which) {</span><span class="line hl">                resetForm();</span><span class="line hl">            }</span><span class="line hl">        });</span><span class="line hl">        builder.show();</span><span class="line hl">    }</span><span class="line hl">&#8203;</span><span class="line hl">    /** Clears all inputs and puts the cursor back in the first field */</span><span class="line hl">    private void resetForm() {</span><span class="line hl">        rgGender.clearCheck();               // no radio button checked</span><span class="line hl">        etHeight.setText("");</span><span class="line hl">        etWeight.setText("");</span><span class="line hl">        etAge.setText("");</span><span class="line hl">        swActivityFactor.setChecked(true);   // also enables the spinner (listener)</span><span class="line hl">        spActivityLevel.setSelection(0);     // first item: Sedentary</span><span class="line hl">        tvResult.setText("Calculate your TDEE!");</span><span class="line hl">        etHeight.requestFocus();</span><span class="line hl">    }</span></code></pre></div>
+<p>Use the <code>AlertDialog</code> from <strong>androidx.appcompat.app</strong>. If Android Studio offers two imports, choose that one so the dialog matches the app theme.</p>
+</li>
+<li>At the end of <code>calculateTDEE()</code>, replace the “display result” lines so the result goes into a message that is shown in the TextView and in the dialog:
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/tdeecalculator/MainActivity.java (end of calculateTDEE)</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">        // display result</span><span class="line hl">        String message = "You need to consume " + (int) TDEE</span><span class="line hl">                + " calories per day to maintain your current weight.";</span><span class="line hl">        tvResult.setText(message);</span><span class="line hl">        showResultDialog(message);</span><span class="line">    }</span></code></pre></div>
+</li>
+<li>Run the app, fill in the form and tap <strong>Calculate</strong>. The dialog appears. Tap <strong>OK</strong> to close it. Calculate again and tap <strong>Reset</strong>: the form is cleared and the cursor is back in Height.
+<figure><img src="assets/img/fig06.png" alt="Screenshot" width="190" loading="lazy"></figure>
+<aside class="callout tip">
+<p class="callout-title">Tip</p>
+<p>Rotate the emulator while the dialog is open: the dialog disappears. As you saw in week 5, rotation destroys and recreates the Activity. A <strong>DialogFragment</strong> (Activity 6) is recreated automatically after rotation.</p>
+</aside>
+</li>
+</ol>
+<div class="exercise">
+<p class="exercise-head"><span>Question 2: Confirm before reset</span></p>
+<p>Tapping <strong>Reset</strong> clears everything at once. Change the app so that <strong>Reset</strong> first shows a second AlertDialog with the message “Clear all fields?” and two buttons, <strong>Yes</strong> and <strong>Cancel</strong>. The form is cleared only when the user taps <strong>Yes</strong>.</p>
+</div>
+</section>
+
+<section class="step" id="activity-5-scrolling-the-form-with-scrollview" data-minutes="10">
+<h2>Activity 5 – Scrolling the form with ScrollView</h2>
+<ol class="steps">
+<li>Turn on <strong>Auto-rotate</strong> in the emulator (swipe down from the top of the screen twice and tap Auto-rotate), run the app and rotate the device to <strong>landscape</strong>. The form is taller than the screen: the Calculate button and the result are cut off, and you cannot scroll to them.
+</li>
+<li>To make the form scroll, put the GridLayout inside a <strong>ScrollView</strong>. A ScrollView can have only <strong>one</strong> direct child, so the GridLayout (with all its rows) is that child. Change the top and the bottom of <strong>activity_main.xml</strong>:
+<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span><span class="line hl">&lt;ScrollView xmlns:android="http://schemas.android.com/apk/res/android"</span><span class="line hl">    xmlns:tools="http://schemas.android.com/tools"</span><span class="line hl">    android:id="@+id/main"</span><span class="line hl">    android:layout_width="match_parent"</span><span class="line hl">    android:layout_height="match_parent"</span><span class="line hl">    tools:context=".MainActivity"&gt;</span><span class="line hl">&#8203;</span><span class="line hl">    &lt;GridLayout</span><span class="line hl">        android:layout_width="match_parent"</span><span class="line hl">        android:layout_height="wrap_content"</span><span class="line hl">        android:columnCount="2"</span><span class="line hl">        android:rowCount="8"&gt;</span><span class="line">&#8203;</span><span class="line cm">        &lt;!-- all the rows from Activity 1 stay here, unchanged --&gt;</span><span class="line">&#8203;</span><span class="line hl">    &lt;/GridLayout&gt;</span><span class="line hl">&lt;/ScrollView&gt;</span></code></pre></div>
+<p>The <code>xmlns</code> lines, <code>android:id="@+id/main"</code> and <code>tools:context</code> move from the GridLayout to the ScrollView, because the ScrollView is now the root. The GridLayout height is <code>wrap_content</code>, so it can be taller than the screen.</p>
+</li>
+<li>Run the app in landscape again. You can now scroll down to the Calculate button.
+<figure><img src="assets/img/fig07.png" alt="Screenshot" width="520" loading="lazy"></figure>
+</li>
+</ol>
+<div class="exercise">
+<p class="exercise-head"><span>Question 3: A CheckBox for kilojoules</span></p>
+<p>Add a <strong>CheckBox</strong> with the text “Also show kilojoules” in a new row above the Calculate button (remember to update <code>layout_row</code> and <code>rowCount</code>). When it is checked, the dialog message also shows the TDEE in kilojoules (1 calorie = 4.184 kJ).</p>
+</div>
+</section>
+
+<section class="step" id="activity-6-picking-a-birth-date" data-minutes="20">
+<h2>Activity 6 – Picking a birth date</h2>
+<p>Users do not always know their exact age, but they know their birth date. Android gives us ready-made <strong>pickers</strong> for dates and times. A picker is shown with a <strong>DialogFragment</strong>: a Fragment that shows a dialog window on top of the Activity. Like the Fragments in week 5, it has its own lifecycle, so it survives screen rotation.</p>
+<ol class="steps">
+<li>Create the Fragment class: right-click your package (under <strong>java</strong>) › <strong>New › Java Class</strong>, name it <code>DatePickerFragment</code>, and replace its content with the code below (keep your own package line).
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/tdeecalculator/DatePickerFragment.java</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">package com.example.tdeecalculator;</span><span class="line">&#8203;</span><span class="line">import android.app.DatePickerDialog;</span><span class="line">import android.app.Dialog;</span><span class="line">import android.os.Bundle;</span><span class="line">import android.widget.DatePicker;</span><span class="line">&#8203;</span><span class="line">import androidx.annotation.NonNull;</span><span class="line">import androidx.annotation.Nullable;</span><span class="line">import androidx.fragment.app.DialogFragment;</span><span class="line">&#8203;</span><span class="line">import java.util.Calendar;</span><span class="line">&#8203;</span><span class="line">public class DatePickerFragment extends DialogFragment</span><span class="line">        implements DatePickerDialog.OnDateSetListener {</span><span class="line">&#8203;</span><span class="line">    // creates the dialog: here a DatePickerDialog that starts 20 years ago</span><span class="line">    @NonNull</span><span class="line">    @Override</span><span class="line">    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {</span><span class="line">        Calendar c = Calendar.getInstance();</span><span class="line">        int year = c.get(Calendar.YEAR) - 20;</span><span class="line">        int month = c.get(Calendar.MONTH);</span><span class="line">        int day = c.get(Calendar.DAY_OF_MONTH);</span><span class="line">        return new DatePickerDialog(requireContext(), this, year, month, day);</span><span class="line">    }</span><span class="line">&#8203;</span><span class="line">    // called when the user taps OK: send the date to MainActivity</span><span class="line">    @Override</span><span class="line">    public void onDateSet(DatePicker view, int year, int month, int day) {</span><span class="line">        MainActivity activity = (MainActivity) requireActivity();</span><span class="line">        activity.processDatePickerResult(year, month, day);</span><span class="line">    }</span><span class="line">}</span></code></pre></div>
+<p><code>processDatePickerResult()</code> is red for now. We add it to MainActivity in step 3.</p>
+</li>
+<li>Open <strong>activity_main.xml</strong> and change the Age EditText so a tap opens the picker instead of the keyboard. Replace the old hint with the new one:
+<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">    &lt;EditText</span><span class="line">        android:id="@+id/etAge"</span><span class="line cm">        ... the other attributes stay ...</span><span class="line hl">        android:focusable="false"</span><span class="line hl">        android:hint="Tap to pick birth date"</span><span class="line hl">        android:onClick="showDatePicker" /&gt;</span></code></pre></div>
+<p><code>focusable="false"</code> means the field cannot get the focus, so no keyboard appears. It is still <strong>clickable</strong>, so the tap calls <code>showDatePicker()</code>.</p>
+</li>
+<li>Add the two methods to <strong>MainActivity.java</strong>. <code>showDatePicker()</code> shows the Fragment, and <code>processDatePickerResult()</code> turns the chosen date into an age and writes it into the Age field.
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/tdeecalculator/MainActivity.java (inside the class)</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">import androidx.fragment.app.DialogFragment;</span><span class="line hl">import java.util.Calendar;</span><span class="line cm">// ... the other imports stay ...</span><span class="line">&#8203;</span><span class="line hl">    /** Called when the user taps the Age field (android:onClick) */</span><span class="line hl">    public void showDatePicker(View view) {</span><span class="line hl">        DialogFragment newFragment = new DatePickerFragment();</span><span class="line hl">        newFragment.show(getSupportFragmentManager(), "datePicker");</span><span class="line hl">    }</span><span class="line hl">&#8203;</span><span class="line hl">    /** Called by DatePickerFragment with the date the user chose */</span><span class="line hl">    public void processDatePickerResult(int year, int month, int day) {</span><span class="line hl">        Calendar today = Calendar.getInstance();</span><span class="line hl">        int age = today.get(Calendar.YEAR) - year;</span><span class="line hl">        // no birthday yet this year? then the person is one year younger</span><span class="line hl">        if (today.get(Calendar.MONTH) &lt; month</span><span class="line hl">                || (today.get(Calendar.MONTH) == month</span><span class="line hl">                    &amp;&amp; today.get(Calendar.DAY_OF_MONTH) &lt; day)) {</span><span class="line hl">            age--;</span><span class="line hl">        }</span><span class="line hl">        etAge.setText(String.valueOf(age));</span><span class="line hl">        etAge.setError(null);   // remove an old "Please enter your age" error</span><span class="line hl">    }</span></code></pre></div>
+</li>
+<li>Run the app and tap the Age field. Choose a birth date and tap <strong>OK</strong>: the age appears in the field. Calculate the TDEE again to check that everything still works.
+<figure><img src="assets/img/fig08.png" alt="Screenshot" width="380" loading="lazy"></figure>
+<aside class="callout tip">
+<p class="callout-title">Tip</p>
+<p><strong>Clickable versus focusable:</strong> a clickable view responds to a tap, and a focusable view can receive keyboard input. The Age field is now clickable but not focusable. Because it cannot take the focus, <code>setError()</code> shows only the red icon on it, without the pop-up message.</p>
+</aside>
+</li>
+</ol>
+<div class="exercise">
+<p class="exercise-head"><span>Question 4: Better date picking</span></p>
+<p><strong>a.  </strong>A birth date cannot be in the future. In <code>onCreateDialog()</code>, stop the user from choosing a date after today. Hint: keep the dialog in a variable and use <code>dialog.getDatePicker().setMaxDate(...)</code> with <code>System.currentTimeMillis()</code>.</p>
+<p><strong>b.  </strong>After the user picks a date, show it in a Toast in the format <strong>day/month/year</strong>, for example “Born on 3/11/2001”. Remember that the month from the picker starts at 0 for January.</p>
+</div>
+</section>
+
+<section class="step" id="troubleshooting" data-minutes="5">
+<h2>Troubleshooting</h2>
+<div class="table-wrap"><table>
+<thead><tr><th><strong>Problem</strong></th><th><strong>Likely cause and fix</strong></th></tr></thead>
+<tbody>
+<tr><td>Build error: cannot find symbol … main</td><td>The root layout lost <code>android:id="@+id/main"</code>. In Activity 5 it must move to the ScrollView.</td></tr>
+<tr><td>App stops when you tap Calculate</td><td>An EditText is empty, so <code>parseInt()</code> throws <code>NumberFormatException</code>. Add the checks from Activity 3.</td></tr>
+<tr><td>App crashes on tap: Could not find method … for android:onClick</td><td>The name in <code>android:onClick</code> must match a <code>public void name(View view)</code> method in MainActivity.</td></tr>
+<tr><td>The result always uses the women’s formula</td><td>Read the gender with <code>isChecked()</code>, not <code>isSelected()</code>.</td></tr>
+<tr><td>The Spinner is empty</td><td>Add <code>android:entries="@array/activity_levels"</code> and check the array name in strings.xml.</td></tr>
+<tr><td>Views overlap in the GridLayout</td><td>Two views use the same <code>layout_row</code> and <code>layout_column</code>. Give each row its own number and make <code>rowCount</code> large enough.</td></tr>
+<tr><td>ScrollView can host only one direct child</td><td>Put all the rows inside the one GridLayout, not directly in the ScrollView.</td></tr>
+<tr><td>The dialog looks different or the import is ambiguous</td><td>Import <code>androidx.appcompat.app.AlertDialog</code>.</td></tr>
+<tr><td>Tapping Age opens the keyboard</td><td>Add <code>android:focusable="false"</code> to <code>etAge</code>.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section class="step" id="post-lab-kopi-order-app" data-minutes="60">
+<h2>Post-Lab – Kopi Order app</h2>
+<p>Build a small coffee-shop ordering app on your own, in a new project named <code>KopiOrder</code> (<strong>Empty Views Activity</strong>, <strong>Java</strong>). It uses the same input controls as this lab, so you can look back at Activities 1–6 when you are stuck. Submit it before next week’s lab.</p>
+<figure><img src="assets/img/fig09.png" alt="Screenshot" width="560" loading="lazy"></figure>
+<h3>Requirements</h3>
+<ul>
+<li><strong>Layout:</strong> a vertical <code>LinearLayout</code> as the root. Keep <code>android:id="@+id/main"</code> on it.</li>
+<li><strong>Name:</strong> an <code>EditText</code> with <code>inputType="textPersonName"</code>.</li>
+<li><strong>Size:</strong> three <code>RadioButton</code>s in a <code>RadioGroup</code>: Small RM 5.00, Medium RM 6.50, Large RM 8.00.</li>
+<li><strong>Add-ons:</strong> three <code>CheckBox</code>es: Extra shot +RM 1.50, Oat milk +RM 2.00, Whipped cream +RM 1.00. The user can tick any number of them.</li>
+<li><strong>Sugar level:</strong> a <code>Spinner</code> with No sugar, Less sugar, Normal and Extra sweet, from a <code>string-array</code> in strings.xml.</li>
+<li><strong>Quantity:</strong> a TextView that starts at 1, with a <strong>−</strong> and a <strong>+</strong> button (<code>android:onClick</code>). The quantity stays between 1 and 10; show a Toast when the user tries to go past a limit.</li>
+<li><strong>Takeaway:</strong> a <code>Switch</code>. Takeaway adds RM 0.50 per cup for packaging.</li>
+<li><strong>Pick-up time:</strong> a button that opens a <code>TimePickerDialog</code> and then shows the chosen time on the button, for example 10:30.</li>
+<li><strong>Place order:</strong> if the name is empty, use <code>setError()</code> and <code>requestFocus()</code>; if no size is chosen, show a Toast. Otherwise show an <code>AlertDialog</code> with the order summary and total, as in the picture. <strong>Confirm</strong> shows the Toast “Thank you, &lt;name&gt;! Your kopi is being prepared.” and <strong>Edit</strong> just closes the dialog.</li>
+</ul>
+<h3>Price</h3>
+<p>Total = (size price + add-ons + takeaway RM 0.50) × quantity</p>
+<p>Check your app with the order in the picture: 2 × Medium with Extra shot and Oat milk, takeaway = (6.50 + 1.50 + 2.00 + 0.50) × 2 = <strong>RM 21.00</strong>.</p>
+<aside class="callout tip">
+<p class="callout-title">Hints</p>
+<p>Use <code>isChecked()</code> to read each RadioButton, each CheckBox and the Switch.</p>
+<p><code>spSugar.getSelectedItem().toString()</code> gives the text of the chosen Spinner item.</p>
+<p>For the pick-up time, follow the time picker section of the Android Developers guide: <a href="https://developer.android.com/develop/ui/views/components/pickers" target="_blank" rel="noopener">https://developer.android.com/develop/ui/views/components/pickers</a></p>
+<p>Format the price with <code>String.format(Locale.US, "RM %.2f", total)</code>.</p>
+</aside>
+<h3>Marking (10 marks)</h3>
+<div class="table-wrap"><table>
+<thead><tr><th><strong>Requirement</strong></th><th><strong>Marks</strong></th></tr></thead>
+<tbody>
+<tr><td>Layout with all the input controls</td><td>2</td></tr>
+<tr><td>Quantity − and + buttons with limits</td><td>1.5</td></tr>
+<tr><td>Correct total price</td><td>2</td></tr>
+<tr><td>Validation of name and size</td><td>1.5</td></tr>
+<tr><td>AlertDialog summary with Confirm and Edit</td><td>2</td></tr>
+<tr><td>TimePickerDialog for the pick-up time</td><td>1</td></tr>
+<tr><td><strong>Total</strong></td><td><strong>10</strong></td></tr>
+</tbody>
+</table></div>
+<p><strong>Submit two files:</strong> (1) one PDF with screenshots of the form, the AlertDialog and the Confirm Toast, plus your <strong>activity_main.xml</strong> and <strong>MainActivity.java</strong> code; (2) your whole project as a zip file. In Android Studio choose <strong>File › Export › Export to Zip File…</strong> and name it <code>KopiOrder_&lt;your student ID&gt;.zip</code>.</p>
+</section>
+  </main>
+</div>
+<div class="nav">
+  <button class="back" id="back" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.4 7.4 14 6l-6 6 6 6 1.4-1.4L10.8 12z"/></svg>Back</button>
+  <button class="next" id="next" type="button">Next<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6 8.6 7.4 13.2 12l-4.6 4.6L10 18l6-6z"/></svg></button>
+</div>
+<script src="assets/codelab.js?v=2"></script>
+</body>
+</html>
