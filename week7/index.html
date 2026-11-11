@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Menus and WebView Lab</title>
+<meta name="description" content="Week 7 lab for CSC557 Mobile Programming: app bar and options menu, floating context menu, and WebView, building a CampusInfo app (Java, XML Views).">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/codelab.css?v=2">
+<style>.line.cm { color: var(--muted); font-style: italic; }
+.line.todo { color: #b3261e; font-style: normal; font-weight: 600; background: rgba(179,38,30,.10); }
+@media (prefers-color-scheme: dark) { .line.todo { color: #f2b8b5; background: rgba(242,184,181,.12); } }
+.fig-cap { text-align: center; color: var(--muted); font-size: .88em; font-style: italic; margin-top: -6px; }</style>
+</head>
+<body data-title="Menus and WebView Lab">
+<header class="topbar">
+  <button class="menu-btn" id="menu" type="button" aria-label="Show steps"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></button>
+  <div class="topbar-title"><h1>Menus and WebView Lab</h1><div class="course">CSC557 Mobile Programming · Week 7</div></div>
+  <div class="remaining"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7z"/></svg><span><span id="remaining-min">0</span> min<span class="txt-long"> remaining</span></span></div>
+</header>
+<div class="shell">
+  <nav class="sidebar" aria-label="Lab steps"><ol class="toc" id="toc"></ol></nav>
+  <div class="scrim" id="scrim"></div>
+  <main>
+<section class="step" id="introduction" data-minutes="5">
+<h2>Introduction</h2>
+<p class="eyebrow">Lab Activity 6 · Week 7 · CSC557 Mobile Programming</p>
+<h3>Objectives</h3>
+<ul class="checklist">
+<li>Adding an app bar with a <code>MaterialToolbar</code> and an options menu</li><li>Handling menu clicks with <code>onOptionsItemSelected()</code></li><li>Showing a floating context menu on a long-press, with a submenu</li><li>Displaying web pages with a <code>WebView</code>: permission, <code>WebViewClient</code>, JavaScript and Back navigation</li>
+</ul>
+<p><strong>Duration:</strong> 2 hours. <strong>You need:</strong> Android Studio, an emulator or Android phone, and an Internet connection.</p>
+<div class="table-wrap"><table class="marks">
+<thead><tr><th><strong>Part</strong></th><th><strong>What you do</strong></th><th><strong>Time</strong></th><th><strong>Marks</strong></th></tr></thead>
+<tbody>
+<tr><td>Activity 1: Options menu</td><td>Add an app bar with action icons and an overflow menu</td><td>30 min</td><td>–</td></tr>
+<tr><td>Activity 2: Context menu</td><td>Long-press the notice to copy, highlight and recolour it</td><td>30 min</td><td>–</td></tr>
+<tr><td>Activity 3: WebView</td><td>Open a website inside the app</td><td>40 min</td><td>–</td></tr>
+<tr><td>Activity 4: Bug hunt</td><td>Predict what five broken snippets do</td><td>20 min</td><td>–</td></tr>
+<tr><td><strong>Total</strong></td><td></td><td><strong>120 min</strong></td><td><strong>–</strong></td></tr>
+</tbody>
+</table></div>
+<p>The questions in the activities are for class discussion and are not marked.</p>
+<h3>How to use this lab</h3>
+<p>This lab does <strong>not</strong> give you all the code. Some parts are complete, some have blanks, and some give you only a specification. You need the slides, the earlier labs and your own thinking to finish them. The parts look like this:</p>
+<div class="code"><div class="code-head"><span class="code-file">Example.java</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line cm">// grey italic: code that is already in the file</span><span class="line hl">// yellow: new code that is given to you, type it in</span><span class="line cm todo">// red: a TODO or a ____ blank that YOU must complete</span></code></pre></div>
+<div class="table-wrap"><table>
+<thead><tr><th><strong>Box</strong></th><th><strong>What it means</strong></th></tr></thead>
+<tbody>
+<tr><td>PREDICT FIRST</td><td>Write down what you think will happen <strong>before</strong> you run the app. Then run it and compare. A wrong guess is fine: it is how you learn.</td></tr>
+<tr><td>YOUR TURN</td><td>A task with a specification and no code. Build it from what you learned in the activity.</td></tr>
+<tr><td>CHECKPOINT</td><td>Show your app to the lecturer or the person beside you before you move on.</td></tr>
+<tr><td>Discussion</td><td>Questions we discuss in class. They are not marked.</td></tr>
+</tbody>
+</table></div>
+<p>You build one app, <strong>CampusInfo</strong>, through Activities 1 to 3. It shows a campus notice that the user can share, copy, highlight and recolour, and it opens the campus website inside the app.</p>
+</section>
+
+<section class="step" id="activity-1-app-bar-and-options-menu" data-minutes="30">
+<h2>Activity 1 – App bar and options menu</h2>
+<p>Android has four types of menus. In this lab you build the first two: the <strong>options menu</strong> and the <strong>floating context menu</strong>.</p>
+<h3>Parts of the options menu</h3>
+<figure><img src="assets/img/fig01.png" alt="Screenshot" width="480" loading="lazy"></figure>
+<p class="fig-cap">(1) Action icons for the most important items   (2) Overflow button   (3) Overflow menu with the other items</p>
+<aside class="callout note">
+<p class="callout-title">What you need to create an options menu</p>
+<p><strong>1.  Menu XML resource</strong> (<code>res/menu/menu_main.xml</code>): one <code>&lt;item&gt;</code> for each option, with an id, a title, and optionally an icon and <code>showAsAction</code>.</p>
+<p><strong>2.  </strong><code>onCreateOptionsMenu()</code>: inflate the XML into the app bar with <code>getMenuInflater().inflate()</code> and return <code>true</code>.</p>
+<p><strong>3.  </strong><code>onOptionsItemSelected()</code>: find out which item was tapped with <code>item.getItemId()</code>.</p>
+<p><strong>4.  A method (or code) for each item</strong>: the action itself, for example share, show a dialog, or open a screen.</p>
+<p><strong>5.  </strong><em>Only for themes without an app bar, like the Empty Views Activity template:</em> add a <code>MaterialToolbar</code> to the layout and call <code>setSupportActionBar()</code> before all of this.</p>
+</aside>
+<figure><img src="assets/img/fig02.png" alt="Screenshot" width="470" loading="lazy"></figure>
+<p class="fig-cap">Steps 1–4 of the options menu (from the slides)</p>
+<div class="table-wrap"><table>
+<thead><tr><th><strong>Requirement</strong></th><th><strong>Where you do it in this activity</strong></th></tr></thead>
+<tbody>
+<tr><td>App bar (MaterialToolbar)</td><td>Steps 2–4</td></tr>
+<tr><td>1. Menu XML resource</td><td>Steps 5–6 (icons and menu_main.xml)</td></tr>
+<tr><td>2. onCreateOptionsMenu()</td><td>Step 7</td></tr>
+<tr><td>3. onOptionsItemSelected()  and  4. the actions</td><td>Step 8 (TODO 1 to TODO 3)</td></tr>
+</tbody>
+</table></div>
+<ol class="steps">
+<li>Create a new Android project named <code>CampusInfo</code> using the <strong>Java</strong> language. Choose <strong>Empty Views Activity</strong> as the template.
+</li>
+<li>The template theme has <strong>no app bar</strong> (<code>Theme.Material3.DayNight.NoActionBar</code>), so we add our own with a <code>MaterialToolbar</code>. Open <strong>res/layout/activity_main.xml</strong> in <strong>Code</strong> view and replace its content:
+<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span><span class="line hl">&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"</span><span class="line hl">    xmlns:tools="http://schemas.android.com/tools"</span><span class="line hl">    android:id="@+id/main"</span><span class="line hl">    android:layout_width="match_parent"</span><span class="line hl">    android:layout_height="match_parent"</span><span class="line hl">    android:orientation="vertical"</span><span class="line hl">    tools:context=".MainActivity"&gt;</span><span class="line hl">&#8203;</span><span class="line hl">    &lt;com.google.android.material.appbar.MaterialToolbar</span><span class="line hl">        android:id="@+id/toolbar"</span><span class="line hl">        android:layout_width="match_parent"</span><span class="line hl">        android:layout_height="?attr/actionBarSize"</span><span class="line hl">        android:background="?attr/colorPrimaryContainer" /&gt;</span><span class="line hl">&#8203;</span><span class="line hl">    &lt;TextView</span><span class="line hl">        android:id="@+id/tvNotice"</span><span class="line hl">        android:layout_width="match_parent"</span><span class="line hl">        android:layout_height="wrap_content"</span><span class="line hl">        android:layout_margin="16dp"</span><span class="line hl">        android:padding="10dp"</span><span class="line hl">        android:text="CAMPUS NOTICE: The library will close at 5 PM on Friday for maintenance."</span><span class="line hl">        android:textColor="#000000"</span><span class="line hl">        android:textSize="18sp" /&gt;</span><span class="line hl">&#8203;</span><span class="line hl">&lt;/LinearLayout&gt;</span></code></pre></div>
+<p>Keep <code>android:id="@+id/main"</code> on the root. The template’s MainActivity uses <code>R.id.main</code> to add padding for the status bar.</p>
+</li>
+<li>In <strong>MainActivity.java</strong>, tell the Activity to use the toolbar as its app bar. Add these lines at the end of <code>onCreate()</code>:
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/campusinfo/MainActivity.java</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">import com.google.android.material.appbar.MaterialToolbar;</span><span class="line cm">// ... the other imports stay ...</span><span class="line">&#8203;</span><span class="line">public class MainActivity extends AppCompatActivity {</span><span class="line">&#8203;</span><span class="line hl">    private TextView tvNotice;</span><span class="line hl">&#8203;</span><span class="line">    @Override</span><span class="line">    protected void onCreate(Bundle savedInstanceState) {</span><span class="line cm">        // ... the template code stays ...</span><span class="line">&#8203;</span><span class="line hl">        MaterialToolbar toolbar = findViewById(R.id.toolbar);</span><span class="line hl">        setSupportActionBar(toolbar);       // the toolbar is now the app bar</span><span class="line hl">        tvNotice = findViewById(R.id.tvNotice);</span><span class="line">    }</span><span class="line">}</span></code></pre></div>
+</li>
+<li>Run the app. You should see an app bar with the title <strong>CampusInfo</strong>, but no icons yet.
+</li>
+<li>Add two icons. Right-click <strong>res/drawable</strong> and choose <strong>New › Vector Asset</strong>. Click the <strong>Clip art</strong> icon, search for <strong>public</strong> (a globe), and name the asset <code>ic_public</code>. Click <strong>Next</strong> and <strong>Finish</strong>. Repeat for the <strong>share</strong> clip art and name it <code>ic_share</code>.
+</li>
+<li>Right-click <strong>res</strong> and choose <strong>New › Android Resource File</strong>. Name it <code>menu_main</code>, set <strong>Resource type</strong> to <strong>Menu</strong>, and click <strong>OK</strong>. Android Studio creates <strong>res/menu/menu_main.xml</strong>. The first item is given to you:
+<div class="code"><div class="code-head"><span class="code-file">res/menu/menu_main.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span><span class="line hl">&lt;menu xmlns:android="http://schemas.android.com/apk/res/android"</span><span class="line hl">    xmlns:app="http://schemas.android.com/apk/res-auto"&gt;</span><span class="line hl">&#8203;</span><span class="line hl">    &lt;item</span><span class="line hl">        android:id="@+id/action_web"</span><span class="line hl">        android:icon="@drawable/ic_public"</span><span class="line hl">        android:orderInCategory="10"</span><span class="line hl">        android:title="Campus website"</span><span class="line hl">        app:showAsAction="ifRoom" /&gt;</span><span class="line hl">&#8203;</span><span class="line cm todo">    &lt;!-- TODO: add the other three items from the table below --&gt;</span><span class="line hl">&#8203;</span><span class="line hl">&lt;/menu&gt;</span></code></pre></div>
+<aside class="callout stretch">
+<p class="callout-title">YOUR TURN: complete menu_main.xml</p>
+<p>Add three more <code>&lt;item&gt;</code> elements with these attributes. Follow the pattern of <code>action_web</code>. Leave out <code>android:icon</code> where the table says –.</p>
+<div class="table-wrap"><table>
+<thead><tr><th><strong>id</strong></th><th><strong>title</strong></th><th><strong>icon</strong></th><th><strong>orderInCategory</strong></th><th><strong>showAsAction</strong></th></tr></thead>
+<tbody>
+<tr><td><code>action_share</code></td><td>Share</td><td><code>ic_share</code></td><td>20</td><td><code>ifRoom</code></td></tr>
+<tr><td><code>action_about</code></td><td>About</td><td>–</td><td>30</td><td><code>never</code></td></tr>
+<tr><td><code>action_reset</code></td><td>Reset text</td><td>–</td><td>40</td><td><code>never</code></td></tr>
+</tbody>
+</table></div>
+</aside>
+</li>
+<li>Inflate the menu. Add this method to <strong>MainActivity</strong> and fill in the blank with the menu resource you just made:
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/campusinfo/MainActivity.java (inside the class)</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">    @Override</span><span class="line hl">    public boolean onCreateOptionsMenu(Menu menu) {</span><span class="line cm todo">        getMenuInflater().inflate(____, menu);</span><span class="line hl">        return true;    // true = show the menu</span><span class="line hl">    }</span></code></pre></div>
+<aside class="callout predict">
+<p class="callout-title">Predict first</p>
+<p>Before you run the app, look at the <code>showAsAction</code> values. Which items will appear as <strong>icons in the app bar</strong> and which will be <strong>hidden in the overflow menu (the three dots)</strong>? Write your answer down, then run the app and check. Then rotate the emulator to landscape: does anything change?</p>
+</aside>
+<figure><img src="assets/img/fig03.png" alt="Screenshot" width="400" loading="lazy"></figure>
+</li>
+<li>Handle the clicks. Android calls <code>onOptionsItemSelected()</code> with the item the user tapped. Add the method below and complete the three TODOs.
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/campusinfo/MainActivity.java (inside the class)</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">    @Override</span><span class="line hl">    public boolean onOptionsItemSelected(MenuItem item) {</span><span class="line hl">        int id = item.getItemId();</span><span class="line hl">&#8203;</span><span class="line hl">        if (id == R.id.action_web) {</span><span class="line hl">            Toast.makeText(this, "Website: coming in Activity 3", Toast.LENGTH_SHORT).show();</span><span class="line hl">            return true;</span><span class="line hl">        } else if (id == R.id.action_share) {</span><span class="line cm todo">            // TODO 1: share the notice text with an implicit Intent</span><span class="line cm todo">            //         (ACTION_SEND, type "text/plain", EXTRA_TEXT = tvNotice.getText().toString())</span><span class="line hl">            return true;</span><span class="line cm todo">        } else if (id == ____) {</span><span class="line cm todo">            // TODO 2: show an AlertDialog with the title "About"</span><span class="line cm todo">            //         and the message "CampusInfo v1.0 by &lt;your name&gt;", with an OK button</span><span class="line hl">            return true;</span><span class="line cm todo">        } else if (id == ____) {</span><span class="line cm todo">            // TODO 3: reset the notice: text size 18, black text, transparent background</span><span class="line hl">            return true;</span><span class="line hl">        }</span><span class="line hl">        return super.onOptionsItemSelected(item);   // not ours: let Android handle it</span><span class="line hl">    }</span></code></pre></div>
+<aside class="callout tip">
+<p class="callout-title">Tip</p>
+<p>You met these in earlier labs. The implicit Intent is in Week 5 (Activities and Intents) and the <code>AlertDialog.Builder</code> is in Week 6. For TODO 3, look up <code>setTextSize()</code>, <code>setTextColor()</code> and <code>setBackgroundColor()</code> with <code>Color.BLACK</code> and <code>Color.TRANSPARENT</code>.</p>
+<p>Use <strong>Alt + Enter</strong> (Windows) or <strong>Option + Enter</strong> (Mac) on a red class name to add the missing import.</p>
+</aside>
+</li>
+<li>Run the app and test all four menu items. Share should open the share sheet with the notice text.
+<aside class="callout checkpoint">
+<p class="callout-title">Checkpoint</p>
+<p>Show the overflow menu and the About dialog.</p>
+</aside>
+</li>
+</ol>
+<div class="exercise">
+<p class="exercise-head"><span>Discussion 1</span></p>
+<p><strong>a.  </strong>The slides handle the clicks with <code>switch (item.getItemId()) { case R.id.action_settings: … }</code>. Try to rewrite your method with a <code>switch</code> like that. What error does Android Studio show? Why do new projects use <code>if … else if</code> instead?</p>
+<p><strong>b.  </strong>In <code>onCreateOptionsMenu()</code>, change <code>return true</code> to <code>return false</code>. <strong>Predict</strong> what happens, then run the app. Change it back afterwards.</p>
+<p><strong>c.  </strong>What does <code>orderInCategory</code> control? Change Reset text to 25 and see what happens.</p>
+</div>
+</section>
+
+<section class="step" id="activity-2-floating-context-menu" data-minutes="30">
+<h2>Activity 2 – Floating context menu</h2>
+<p>A context menu appears when the user <strong>long-presses</strong> a view. Its actions affect only that view. We add one to the notice with three actions: <strong>Copy</strong>, <strong>Highlight</strong>, and <strong>Text colour</strong>, which opens a <strong>submenu</strong>.</p>
+<aside class="callout note">
+<p class="callout-title">What you need to create a floating context menu</p>
+<p><strong>1.  Menu XML resource</strong> (<code>res/menu/menu_context.xml</code>): one <code>&lt;item&gt;</code> for each action. A <code>&lt;menu&gt;</code> inside an <code>&lt;item&gt;</code> makes a submenu.</p>
+<p><strong>2.  </strong><code>registerForContextMenu(view)</code> in <code>onCreate()</code>: tell Android which view has the context menu. Without it, a long-press does nothing.</p>
+<p><strong>3.  </strong><code>onCreateContextMenu()</code>: inflate the XML when the user long-presses the view. You can also set a header title.</p>
+<p><strong>4.  </strong><code>onContextItemSelected()</code>: find out which item was tapped with <code>item.getItemId()</code>.</p>
+<p><strong>5.  A method (or code) for each item</strong>: the action itself, for example copy or highlight.</p>
+</aside>
+<figure><img src="assets/img/fig04.png" alt="Screenshot" width="500" loading="lazy"></figure>
+<p class="fig-cap">Steps 1–5 of the floating context menu (from the slides)</p>
+<p>Compare this with the options menu: steps 1, 4 and 5 are the same idea. What is new is step 2, registering the view, and the method names in steps 3 and 4. In this activity, requirement 1 is step 1, requirement 2 is step 2, requirement 3 is step 3, and requirements 4 and 5 are step 4.</p>
+<figure><img src="assets/img/fig05.png" alt="Screenshot" width="560" loading="lazy"></figure>
+<ol class="steps">
+<li>Create a new menu resource file named <code>menu_context</code> (Resource type <strong>Menu</strong>). A submenu is a <code>&lt;menu&gt;</code> inside an <code>&lt;item&gt;</code>. Complete the TODO:
+<div class="code"><div class="code-head"><span class="code-file">res/menu/menu_context.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span><span class="line hl">&lt;menu xmlns:android="http://schemas.android.com/apk/res/android"&gt;</span><span class="line hl">&#8203;</span><span class="line hl">    &lt;item android:id="@+id/context_copy" android:title="Copy" /&gt;</span><span class="line hl">    &lt;item android:id="@+id/context_highlight" android:title="Highlight" /&gt;</span><span class="line hl">&#8203;</span><span class="line hl">    &lt;item android:id="@+id/context_colour" android:title="Text colour"&gt;</span><span class="line hl">        &lt;menu&gt;</span><span class="line cm todo">            &lt;!-- TODO: three items with the ids colour_red, colour_blue, colour_green</span><span class="line cm todo">                 and the titles Red, Blue and Green --&gt;</span><span class="line hl">        &lt;/menu&gt;</span><span class="line hl">    &lt;/item&gt;</span><span class="line hl">&#8203;</span><span class="line hl">&lt;/menu&gt;</span></code></pre></div>
+</li>
+<li>A view gets a context menu only after you <strong>register</strong> it. At the end of <code>onCreate()</code>, register the notice:
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/campusinfo/MainActivity.java (end of onCreate)</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line cm">        tvNotice = findViewById(R.id.tvNotice);</span><span class="line cm todo">        registerForContextMenu(____);</span></code></pre></div>
+</li>
+<li>Android calls <code>onCreateContextMenu()</code> when the user long-presses a registered view. Inflate the context menu and give it a header:
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/campusinfo/MainActivity.java (inside the class)</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">    @Override</span><span class="line hl">    public void onCreateContextMenu(ContextMenu menu, View v,</span><span class="line hl">                                    ContextMenu.ContextMenuInfo menuInfo) {</span><span class="line hl">        super.onCreateContextMenu(menu, v, menuInfo);</span><span class="line cm todo">        getMenuInflater().inflate(____, menu);</span><span class="line hl">        menu.setHeaderTitle("Notice");</span><span class="line hl">    }</span></code></pre></div>
+</li>
+<li>Handle the clicks in <code>onContextItemSelected()</code>. Copy is given, because the clipboard is new to you. Complete TODO 4 and TODO 5.
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/campusinfo/MainActivity.java (inside the class)</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">    @Override</span><span class="line hl">    public boolean onContextItemSelected(MenuItem item) {</span><span class="line hl">        int id = item.getItemId();</span><span class="line hl">&#8203;</span><span class="line hl">        if (id == R.id.context_copy) {</span><span class="line hl">            ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);</span><span class="line hl">            clipboard.setPrimaryClip(ClipData.newPlainText("notice", tvNotice.getText()));</span><span class="line hl">            Toast.makeText(this, "Notice copied", Toast.LENGTH_SHORT).show();</span><span class="line hl">            return true;</span><span class="line hl">        } else if (id == R.id.context_highlight) {</span><span class="line cm todo">            // TODO 4: give tvNotice a yellow background: Color.parseColor("#FFF59D")</span><span class="line hl">            return true;</span><span class="line hl">        }</span><span class="line cm todo">        // TODO 5: handle colour_red, colour_blue and colour_green.</span><span class="line cm todo">        //         Use Color.RED, Color.BLUE and Color.rgb(46, 125, 50).</span><span class="line hl">&#8203;</span><span class="line hl">        return super.onContextItemSelected(item);</span><span class="line hl">    }</span></code></pre></div>
+<aside class="callout predict">
+<p class="callout-title">Predict first</p>
+<p>You did not write any code for the <strong>Text colour</strong> item itself, only for Red, Blue and Green. What will happen when the user taps <strong>Text colour</strong>? Run the app and check.</p>
+</aside>
+</li>
+<li>Run the app. Long-press the notice and try every action. Paste the copied text into the search bar of the emulator to check Copy.
+<aside class="callout tip">
+<p class="callout-title">Tip</p>
+<p>On Android 13 and later, the system shows its own small pop-up when an app copies to the clipboard, so you may see two messages. That is normal.</p>
+</aside>
+<aside class="callout checkpoint">
+<p class="callout-title">Checkpoint</p>
+<p>Highlight the notice and make it blue, as in picture (3). Then use Reset text from the options menu.</p>
+</aside>
+</li>
+</ol>
+<div class="exercise">
+<p class="exercise-head"><span>Discussion 2</span></p>
+<p><strong>a.  </strong>Comment out <code>registerForContextMenu(…)</code>. <strong>Predict</strong> what happens when you long-press the notice, then test it.</p>
+<p><strong>b.  </strong>The slides show two kinds of contextual menu: the floating context menu and the contextual action mode. A mail app lets the user select five emails and delete them all at once. Which kind fits, and why?</p>
+<p><strong>c.  </strong>Our code changes <code>tvNotice</code> directly. If you register <strong>two</strong> TextViews, how can <code>onCreateContextMenu()</code> tell which one was long-pressed? (Look at its parameters.)</p>
+</div>
+</section>
+
+<section class="step" id="activity-3-displaying-web-pages-with-webview" data-minutes="40">
+<h2>Activity 3 – Displaying web pages with WebView</h2>
+<p>A <strong>WebView</strong> shows web pages inside your app. When the user taps the globe icon, we open a second Activity that loads the campus website. In this lab we use https://developer.android.com as the “campus website”.</p>
+<ol class="steps">
+<li>Choose <strong>File › New › Activity › Empty Views Activity</strong>. Name it <code>WebActivity</code> and keep the layout name <code>activity_web</code>. Click <strong>Finish</strong>.
+</li>
+<li>Open <strong>activity_web.xml</strong>. Change the root to a vertical <code>LinearLayout</code> with <code>android:id="@+id/main"</code>, and copy the <code>MaterialToolbar</code> from activity_main.xml into it.
+<aside class="callout stretch">
+<p class="callout-title">YOUR TURN: add the WebView</p>
+<p>Below the toolbar, add a <code>&lt;WebView&gt;</code> with the id <code>webView</code>. Give it <code>layout_width="match_parent"</code>, <code>layout_height="0dp"</code> and <code>layout_weight="1"</code>, so it fills the rest of the screen under the toolbar. Slide 38 shows the WebView tag.</p>
+</aside>
+</li>
+<li>In <strong>MainActivity</strong>, replace the Toast in the <code>action_web</code> branch with an explicit Intent that starts <code>WebActivity</code> and passes the address as an extra:
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/campusinfo/MainActivity.java (in onOptionsItemSelected)</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">        if (id == R.id.action_web) {</span><span class="line cm todo">            // TODO 6: start WebActivity with an explicit Intent and</span><span class="line cm todo">            //         putExtra("url", "https://developer.android.com")</span><span class="line">            return true;</span><span class="line">        }</span></code></pre></div>
+</li>
+<li>In <strong>WebActivity.java</strong>, set up the toolbar and load the address from the Intent. Add the field and the lines at the end of <code>onCreate()</code>, and fill in the two blanks:
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/campusinfo/WebActivity.java</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">public class WebActivity extends AppCompatActivity {</span><span class="line">&#8203;</span><span class="line hl">    private WebView webView;</span><span class="line hl">&#8203;</span><span class="line">    @Override</span><span class="line">    protected void onCreate(Bundle savedInstanceState) {</span><span class="line cm">        // ... the template code stays ...</span><span class="line">&#8203;</span><span class="line hl">        MaterialToolbar toolbar = findViewById(R.id.toolbar);</span><span class="line hl">        setSupportActionBar(toolbar);</span><span class="line hl">&#8203;</span><span class="line hl">        webView = findViewById(R.id.webView);</span><span class="line cm todo">        String url = getIntent().getStringExtra(____);</span><span class="line cm todo">        webView.loadUrl(____);</span><span class="line">    }</span><span class="line">}</span></code></pre></div>
+<aside class="callout predict">
+<p class="callout-title">Predict first</p>
+<p>Run the app and tap the globe icon. Before you tap, write down what you expect to see. Did the page load? What does the screen say? Which line from <strong>slide 38</strong> is missing?</p>
+</aside>
+</li>
+<li>Fix the problem: open <strong>manifests/AndroidManifest.xml</strong> and add the missing line from slide 38 <strong>above</strong> the <code>&lt;application&gt;</code> tag. Run the app again: the page should load.
+<div class="code"><div class="code-head"><span class="code-file">manifests/AndroidManifest.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;manifest xmlns:android="http://schemas.android.com/apk/res/android" ...&gt;</span><span class="line">&#8203;</span><span class="line cm todo">    &lt;!-- TODO 7: the permission from slide 38 --&gt;</span><span class="line">&#8203;</span><span class="line">    &lt;application</span><span class="line cm">        ... /&gt;</span><span class="line">&lt;/manifest&gt;</span></code></pre></div>
+<figure><img src="assets/img/fig06.png" alt="Screenshot" width="200" loading="lazy"></figure>
+<aside class="callout predict">
+<p class="callout-title">Predict first</p>
+<p>Tap any link on the page, for example <strong>Get started</strong>. Does the new page open <strong>inside your app</strong> or in the <strong>Chrome</strong> app? Write down your guess before you tap.</p>
+</aside>
+</li>
+<li>By default, a WebView asks the system to open links, so Android opens them in the browser. To keep links inside the app, give the WebView a <code>WebViewClient</code>. Many sites also need JavaScript, which is off by default. Add these lines <strong>before</strong> <code>loadUrl()</code>:
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/campusinfo/WebActivity.java (in onCreate, before loadUrl)</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">        webView.setWebViewClient(new WebViewClient());   // open links inside the WebView</span><span class="line cm todo">        // TODO 8: enable JavaScript (slide 39: getSettings() and setJavaScriptEnabled)</span></code></pre></div>
+</li>
+<li>Run the app and tap a link again. It should now open inside the WebView.
+</li>
+<li>Now we want more control: pages on <strong>developer.android.com</strong> stay in the app, but links to <strong>other sites</strong> open in the phone’s browser. This is the <code>MyWebViewClient</code> idea from slide 40. The slide uses the old <code>shouldOverrideUrlLoading(WebView, String)</code>, which is deprecated. Here is the current version with blanks. Add it inside the WebActivity class:
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/campusinfo/WebActivity.java (inside the class)</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">    private class MyWebViewClient extends WebViewClient {</span><span class="line hl">        @Override</span><span class="line hl">        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {</span><span class="line hl">            Uri uri = request.getUrl();</span><span class="line hl">            if ("developer.android.com".equals(uri.getHost())) {</span><span class="line cm todo">                return ____;      // our site: let the WebView load it</span><span class="line hl">            }</span><span class="line cm todo">            // TODO 9: open every other link in the browser with an ACTION_VIEW Intent</span><span class="line cm todo">            return ____;          // we handled it: the WebView must not load it</span><span class="line hl">        }</span><span class="line hl">    }</span></code></pre></div>
+<p>Then change <code>new WebViewClient()</code> to <code>new MyWebViewClient()</code>. To test, scroll to the bottom of the page and tap a link to another site, for example YouTube or GitHub.</p>
+<aside class="callout predict">
+<p class="callout-title">Predict first</p>
+<p>Open three pages in the WebView, one after another. Then press the <strong>Back</strong> button (or swipe back). Do you go back to the previous <strong>page</strong>, or does something else happen?</p>
+</aside>
+</li>
+<li>Slide 41 handles Back with <code>onKeyDown(KEYCODE_BACK, …)</code>. New apps target Android 16, where the system uses <strong>predictive back</strong>, so the Back key no longer reaches <code>onKeyDown()</code>. The current way is an <code>OnBackPressedCallback</code>. Add it at the end of <code>onCreate()</code> and fill in the two blanks with methods from slide 41:
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/campusinfo/WebActivity.java (end of onCreate)</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {</span><span class="line hl">            @Override</span><span class="line hl">            public void handleOnBackPressed() {</span><span class="line cm todo">                if (webView.____()) {         // is there a previous page?</span><span class="line cm todo">                    webView.____();            // go to it</span><span class="line hl">                } else {</span><span class="line hl">                    setEnabled(false);                               // stop catching Back</span><span class="line hl">                    getOnBackPressedDispatcher().onBackPressed();    // close WebActivity</span><span class="line hl">                }</span><span class="line hl">            }</span><span class="line hl">        });</span></code></pre></div>
+</li>
+<li>Run the app, open a few pages and press Back. You should step back through the pages, and then return to MainActivity.
+<aside class="callout stretch">
+<p class="callout-title">YOUR TURN: a menu for WebActivity</p>
+<p>Use what you learned in Activity 1 to give WebActivity its own options menu, <code>menu_web.xml</code>. No code is given.</p>
+<div class="table-wrap"><table>
+<thead><tr><th><strong>Item</strong></th><th><strong>showAsAction</strong></th><th><strong>Action</strong></th></tr></thead>
+<tbody>
+<tr><td>Refresh (icon <code>ic_refresh</code>)</td><td><code>ifRoom</code></td><td>Reload the current page: <code>webView.reload()</code></td></tr>
+<tr><td>Open in browser</td><td><code>never</code></td><td>Open the current page (<code>webView.getUrl()</code>) in the browser</td></tr>
+<tr><td>Close</td><td><code>never</code></td><td>Close WebActivity: <code>finish()</code></td></tr>
+</tbody>
+</table></div>
+</aside>
+<aside class="callout checkpoint">
+<p class="callout-title">Checkpoint</p>
+<p>Open a page, go back with the Back button, refresh it, and open it in the browser.</p>
+</aside>
+</li>
+</ol>
+<div class="exercise">
+<p class="exercise-head"><span>Discussion 3</span></p>
+<p><strong>a.  </strong>In <code>MyWebViewClient</code>, what does <code>return true</code> mean, and what does <code>return false</code> mean?</p>
+<p><strong>b.  </strong>The slides say a WebView is helpful for information that is updated regularly. Give one example where a WebView is a good choice and one where a normal Android screen is better.</p>
+<p><strong>c.  </strong>JavaScript is off by default in a WebView. Why do you think Android does that?</p>
+</div>
+</section>
+
+<section class="step" id="activity-4-bug-hunt" data-minutes="20">
+<h2>Activity 4 – Bug hunt</h2>
+<p>Each snippet below has one mistake. Work with the person beside you. For each one, <strong>predict</strong> what the user sees: a build error, a crash, a wrong result, or nothing visible. Write your answers in the last column. Then try <strong>two</strong> of them in your CampusInfo project to check, and undo the change afterwards.</p>
+<div class="table-wrap"><table>
+<thead><tr><th><strong>#</strong></th><th><strong>Code</strong></th><th><strong>What happens? (your prediction)</strong></th></tr></thead>
+<tbody>
+<tr><td>1</td><td><code>onCreateOptionsMenu()</code> ends with <code>return false;</code></td><td></td></tr>
+<tr><td>2</td><td>In menu_main.xml, the Share item uses <code>android:showAsAction="always"</code> instead of <code>app:showAsAction</code></td><td></td></tr>
+<tr><td>3</td><td>In <code>onCreate()</code>, <code>registerForContextMenu(tvNotice);</code> is placed <strong>before</strong> <code>tvNotice = findViewById(R.id.tvNotice);</code></td><td></td></tr>
+<tr><td>4</td><td>MainActivity sends <code>putExtra("url", "developer.android.com")</code> (no <code>https://</code>)</td><td></td></tr>
+<tr><td>5</td><td>In <code>onContextItemSelected()</code>, the Red branch changes the colour but has <strong>no</strong> <code>return true;</code></td><td></td></tr>
+</tbody>
+</table></div>
+<div class="exercise">
+<p class="exercise-head"><span>Discussion 4</span></p>
+<p><strong>a.  </strong>Which bugs did Android Studio warn you about <strong>before</strong> you ran the app? Which ones could you only find by running it?</p>
+<p><strong>b.  </strong>In bug 5, the colour still changes. So what is the <code>boolean</code> that the menu methods return actually for?</p>
+</div>
+</section>
+
+<section class="step" id="troubleshooting" data-minutes="5">
+<h2>Troubleshooting</h2>
+<div class="table-wrap"><table>
+<thead><tr><th><strong>Problem</strong></th><th><strong>Likely cause and fix</strong></th></tr></thead>
+<tbody>
+<tr><td>No app bar at all</td><td>The <code>MaterialToolbar</code> is missing from the layout, or <code>setSupportActionBar(toolbar)</code> is not called.</td></tr>
+<tr><td>The menu does not appear</td><td><code>onCreateOptionsMenu()</code> is missing, inflates the wrong file, or returns <code>false</code>.</td></tr>
+<tr><td>Every item is in the overflow, even with ifRoom</td><td>Use <code>app:showAsAction</code> with the <code>xmlns:app</code> namespace, not <code>android:showAsAction</code>.</td></tr>
+<tr><td>Error: constant expression required</td><td>Resource ids are not constants in new projects. Use <code>if … else if</code> instead of <code>switch</code>.</td></tr>
+<tr><td>Long-press does nothing</td><td>The view is not registered with <code>registerForContextMenu()</code>.</td></tr>
+<tr><td>Webpage not available: net::ERR_CACHE_MISS</td><td>The INTERNET permission is missing from AndroidManifest.xml.</td></tr>
+<tr><td>Links open in Chrome</td><td>Call <code>setWebViewClient(...)</code> before <code>loadUrl()</code>.</td></tr>
+<tr><td>Back closes WebActivity at once</td><td>Add the <code>OnBackPressedCallback</code> and check <code>canGoBack()</code>.</td></tr>
+<tr><td>Cannot resolve symbol WebView, Uri, Color …</td><td>Add the import with Alt + Enter (Option + Enter on a Mac).</td></tr>
+</tbody>
+</table></div>
+</section>
+  </main>
+</div>
+<div class="nav">
+  <button class="back" id="back" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.4 7.4 14 6l-6 6 6 6 1.4-1.4L10.8 12z"/></svg>Back</button>
+  <button class="next" id="next" type="button">Next<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6 8.6 7.4 13.2 12l-4.6 4.6L10 18l6-6z"/></svg></button>
+</div>
+<script src="assets/codelab.js?v=2"></script>
+</body>
+</html>
