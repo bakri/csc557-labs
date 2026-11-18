@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>List View Lab</title>
+<meta name="description" content="Week 8 lab for CSC557 Mobile Programming: ListView with an ArrayAdapter, RecyclerView with a custom Adapter and ViewHolder, and how RecyclerView recycles rows (Java, XML Views).">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/codelab.css?v=2">
+<style>.line.cm { color: var(--muted); font-style: italic; }
+.line.todo { color: #b3261e; font-style: normal; font-weight: 600; background: rgba(179,38,30,.10); }
+@media (prefers-color-scheme: dark) { .line.todo { color: #f2b8b5; background: rgba(242,184,181,.12); } }
+.callout.type { background: #e0f4f5; border-color: #00838f; }
+.callout.type .callout-title { color: #006064; }
+@media (prefers-color-scheme: dark) { .callout.type { background: rgba(0,131,143,.16); } .callout.type .callout-title { color: #80deea; } }
+.fig-cap { text-align: center; color: var(--muted); font-size: .88em; font-style: italic; margin-top: -6px; }</style>
+</head>
+<body data-title="List View Lab">
+<header class="topbar">
+  <button class="menu-btn" id="menu" type="button" aria-label="Show steps"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></button>
+  <div class="topbar-title"><h1>List View Lab</h1><div class="course">CSC557 Mobile Programming · Week 8</div></div>
+  <div class="remaining"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7z"/></svg><span><span id="remaining-min">0</span> min<span class="txt-long"> remaining</span></span></div>
+</header>
+<div class="shell">
+  <nav class="sidebar" aria-label="Lab steps"><ol class="toc" id="toc"></ol></nav>
+  <div class="scrim" id="scrim"></div>
+  <main>
+<section class="step" id="introduction" data-minutes="5">
+<h2>Introduction</h2>
+<p class="eyebrow">Lab Activity 7 · Week 8 · CSC557 Mobile Programming</p>
+<h3>Objectives</h3>
+<ul class="checklist">
+<li>Showing a scrolling list with a <code>ListView</code> and an <code>ArrayAdapter</code></li><li>Designing your own layout for one row of a list</li><li>Building a <code>RecyclerView</code> with a custom Adapter, a ViewHolder and a LayoutManager</li><li>Seeing how RecyclerView <strong>recycles</strong> row views, and handling taps on a row</li>
+</ul>
+<p><strong>Duration:</strong> 2 hours. <strong>You need:</strong> Android Studio and an emulator or Android phone.</p>
+<div class="table-wrap"><table class="marks">
+<thead><tr><th><strong>Part</strong></th><th><strong>What you do</strong></th><th><strong>Time</strong></th><th><strong>Marks</strong></th></tr></thead>
+<tbody>
+<tr><td>Activity 1: ListView</td><td>Show a list of names with an ArrayAdapter, then tap a name</td><td>30 min</td><td>–</td></tr>
+<tr><td>Activity 2: RecyclerView</td><td>Show contacts with a picture, name and phone number</td><td>50 min</td><td>–</td></tr>
+<tr><td>Activity 3: Recycling and clicks</td><td>Watch rows being reused in Logcat, then make rows clickable</td><td>25 min</td><td>–</td></tr>
+<tr><td>Activity 4: Bug hunt</td><td>Predict what six broken snippets do</td><td>15 min</td><td>–</td></tr>
+<tr><td>Post-Lab (after the lab)</td><td>Add an email address to every contact</td><td>–</td><td>10</td></tr>
+<tr><td><strong>Total</strong></td><td></td><td><strong>120 min</strong></td><td><strong>10</strong></td></tr>
+</tbody>
+</table></div>
+<p>The questions in the activities are for class discussion and are not marked. Only the Post-Lab is marked (10 marks).</p>
+<h3>How to use this lab</h3>
+<p>We build the apps together in class. This lab does <strong>not</strong> give you all the code. Some parts are complete, some have blanks, and some give you only a specification. The parts look like this:</p>
+<div class="code"><div class="code-head"><span class="code-file">Example.java</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line cm">// grey italic: code that is already in the file</span><span class="line hl">// yellow: new code that is given to you, type it in</span><span class="line cm todo">// red: a TODO or a ____ blank that YOU must complete</span></code></pre></div>
+<div class="table-wrap"><table>
+<thead><tr><th><strong>Box</strong></th><th><strong>What it means</strong></th></tr></thead>
+<tbody>
+<tr><td>PREDICT FIRST</td><td>Write down what you think will happen <strong>before</strong> you run the app. Then run it and compare. A wrong guess is fine: it is how you learn.</td></tr>
+<tr><td>YOUR TURN</td><td>A task with a specification and no code. Build it from what you learned in the activity.</td></tr>
+<tr><td>CHECKPOINT</td><td>Show your app to the lecturer or the person beside you before you move on.</td></tr>
+<tr><td>Discussion</td><td>Questions we discuss in class. They are not marked.</td></tr>
+</tbody>
+</table></div>
+<h3>Why lists?</h3>
+<p>Most apps show a scrolling list: contacts, messages, news, products, recipes. Each row has the <strong>same design</strong> but <strong>different data</strong>. Android does not make you build 100 rows by hand. You design <strong>one</strong> row, and an <strong>Adapter</strong> fills it with the data for each position.</p>
+<div class="fig-row" style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap"><figure><img src="assets/img/fig01.png" alt="Screenshot" width="190" loading="lazy"></figure><figure><img src="assets/img/fig02.png" alt="Screenshot" width="150" loading="lazy"></figure></div>
+<p class="fig-cap">Two lists: one line of text per row (left), and a picture with two lines of text per row (right)</p>
+<aside class="callout note">
+<p class="callout-title">What you need to show any list</p>
+<p><strong>1.  A list view</strong> in the Activity layout: <code>ListView</code> (Activity 1) or <code>RecyclerView</code> (Activity 2).</p>
+<p><strong>2.  A row layout</strong>: an XML file for <strong>one</strong> row. For one line of text you can use Android’s built-in row.</p>
+<p><strong>3.  The data</strong>: for example a <code>String[]</code> or a <code>List&lt;ContactVO&gt;</code>.</p>
+<p><strong>4.  An Adapter</strong>: it takes the data for one position and puts it into one row view.</p>
+<p><strong>5.  Connect them</strong> in <code>onCreate()</code>: create the Adapter with the data and give it to the list view with <code>setAdapter()</code>.</p>
+</aside>
+</section>
+
+<section class="step" id="activity-1-listview-with-an-arrayadapter" data-minutes="30">
+<h2>Activity 1 – ListView with an ArrayAdapter</h2>
+<p>We start with the simplest list: one name per row. Android’s <code>ArrayAdapter</code> already knows how to put a <code>String</code> into a <code>TextView</code>, so we only need the data, a row layout and three lines of code.</p>
+<figure><img src="assets/img/fig03.png" alt="Screenshot" width="520" loading="lazy"></figure>
+<p class="fig-cap">The data, the Adapter and the view. Keep this picture in mind for the whole lab.</p>
+<ol class="steps">
+<li>Create a new Android project named <code>ContactList</code> using the <strong>Java</strong> language. Choose <strong>Empty Views Activity</strong> as the template.
+</li>
+<li>Open <strong>res/layout/activity_main.xml</strong> in <strong>Code</strong> view and replace its content. We use a vertical <code>LinearLayout</code> with one <code>ListView</code>:
+<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span><span class="line hl">&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"</span><span class="line hl">    xmlns:tools="http://schemas.android.com/tools"</span><span class="line hl">    android:id="@+id/main"</span><span class="line hl">    android:layout_width="match_parent"</span><span class="line hl">    android:layout_height="match_parent"</span><span class="line hl">    android:orientation="vertical"</span><span class="line hl">    tools:context=".MainActivity"&gt;</span><span class="line hl">&#8203;</span><span class="line hl">    &lt;!-- holds the list of contact names --&gt;</span><span class="line hl">    &lt;ListView</span><span class="line hl">        android:id="@+id/contactList"</span><span class="line hl">        android:layout_width="match_parent"</span><span class="line hl">        android:layout_height="match_parent" /&gt;</span><span class="line hl">&#8203;</span><span class="line hl">&lt;/LinearLayout&gt;</span></code></pre></div>
+<p>Keep <code>android:id="@+id/main"</code> on the root. The template’s MainActivity uses <code>R.id.main</code> to add padding for the status bar.</p>
+</li>
+<li>In <strong>MainActivity.java</strong>, add the data as a field of the class. This is the <strong>data</strong> part of the picture above.
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/contactlist/MainActivity.java</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">public class MainActivity extends AppCompatActivity {</span><span class="line">&#8203;</span><span class="line hl">    // contacts data</span><span class="line hl">    private final String[] contacts = {"Kristofer", "Vernita", "Rubie",</span><span class="line hl">            "Bobbye", "Harley", "Christia", "Jacqualine",</span><span class="line hl">            "Linwood", "Shakia", "Modesta", "Dala",</span><span class="line hl">            "Arla", "Pattie", "Elicia", "Stefania",</span><span class="line hl">            "Carrie", "Junior"};</span><span class="line hl">&#8203;</span><span class="line">    @Override</span><span class="line">    protected void onCreate(Bundle savedInstanceState) {</span><span class="line cm">        // ... the template code stays ...</span><span class="line">    }</span><span class="line">}</span></code></pre></div>
+</li>
+<li>Now the <strong>Adapter</strong>. We first use a row layout that is built into Android, <code>android.R.layout.simple_list_item_1</code>. It is one <code>TextView</code>. Add these lines at the end of <code>onCreate()</code> and fill in the blank:
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/contactlist/MainActivity.java (end of onCreate)</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">        // the Adapter: data (contacts) + row layout (one TextView)</span><span class="line hl">        ArrayAdapter&lt;String&gt; contactAdapter = new ArrayAdapter&lt;&gt;(this,</span><span class="line hl">                android.R.layout.simple_list_item_1, contacts);</span><span class="line hl">&#8203;</span><span class="line hl">        // the view: give the Adapter to the ListView</span><span class="line hl">        ListView contactList = findViewById(R.id.contactList);</span><span class="line cm todo">        contactList.setAdapter(____);</span></code></pre></div>
+<aside class="callout tip">
+<p class="callout-title">Tip</p>
+<p>Use <strong>Alt + Enter</strong> (Windows) or <strong>Option + Enter</strong> (Mac) on a red class name such as <code>ArrayAdapter</code> or <code>ListView</code> to add the missing import.</p>
+</aside>
+<aside class="callout predict">
+<p class="callout-title">Predict first</p>
+<p>The array has <strong>17</strong> names, but the screen has room for only about 12 rows. What will happen to the other names? Write your answer down, then run the app and check.</p>
+</aside>
+</li>
+<li>Run the app. You should see picture (1) below. Scroll the list.
+<figure><img src="assets/img/fig04.png" alt="Screenshot" width="400" loading="lazy"></figure>
+</li>
+<li>Now design <strong>your own row</strong>. Right-click <strong>res/layout</strong> and choose <strong>New › Layout Resource File</strong>. Name it <code>item_listview</code>, set <strong>Root element</strong> to <code>TextView</code>, and click <strong>OK</strong>. Replace its content:
+<div class="code"><div class="code-head"><span class="code-file">res/layout/item_listview.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span><span class="line hl">&lt;!-- Design of ONE row. The ArrayAdapter needs the root to be a TextView. --&gt;</span><span class="line hl">&lt;TextView xmlns:android="http://schemas.android.com/apk/res/android"</span><span class="line hl">    android:id="@+id/label"</span><span class="line hl">    android:layout_width="match_parent"</span><span class="line hl">    android:layout_height="wrap_content"</span><span class="line hl">    android:padding="10dp"</span><span class="line hl">    android:textSize="16sp"</span><span class="line hl">    android:textStyle="bold" /&gt;</span></code></pre></div>
+<aside class="callout stretch">
+<p class="callout-title">YOUR TURN: use your row</p>
+<p>Change <strong>one argument</strong> in the <code>new ArrayAdapter&lt;&gt;(…)</code> line so the list uses <code>item_listview.xml</code> instead of the built-in row. Run the app. You should see picture (2).</p>
+<p><strong>Hint:</strong> your own layouts are in <code>R.layout</code>. Android’s built-in layouts are in <code>android.R.layout</code>.</p>
+</aside>
+</li>
+<li>Make the names respond to a tap. A ListView tells you which <strong>position</strong> was tapped. Add this at the end of <code>onCreate()</code> and fill in the blank so the Toast shows the name, for example <strong>You tapped Rubie</strong>:
+<aside class="callout type">
+<p class="callout-title">Type it: use autocomplete, do not copy</p>
+<p>Do not copy this block. Most of it is written by Android Studio. Type it like this:</p>
+<p><strong>1.  </strong>Type <code>contactList.setOnItemClickListener(new On</code> and wait for the suggestion list.</p>
+<p><strong>2.  </strong>Pick <strong>OnItemClickListener</strong> (android.widget.AdapterView) and press <strong>Enter</strong>. Android Studio writes the whole listener and the empty <code>onItemClick()</code> method for you, with the import.</p>
+<p><strong>3.  </strong>You only type the <strong>two lines inside</strong> <code>onItemClick()</code>: the <code>name</code> line and the Toast. For the Toast, type <code>Toast</code> and pick the <strong>Create a new Toast</strong> (<code>Toast.makeText</code>) suggestion.</p>
+</aside>
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/contactlist/MainActivity.java (end of onCreate)</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">        contactList.setOnItemClickListener(new AdapterView.OnItemClickListener() {</span><span class="line hl">            @Override</span><span class="line hl">            public void onItemClick(AdapterView&lt;?&gt; parent, View view, int position, long id) {</span><span class="line cm todo">                String name = ____;      // the name at this position</span><span class="line hl">                Toast.makeText(MainActivity.this, "You tapped " + name,</span><span class="line hl">                        Toast.LENGTH_SHORT).show();</span><span class="line hl">            }</span><span class="line hl">        });</span></code></pre></div>
+<p>This is the same listener pattern as <code>setOnClickListener()</code> for a Button in week 6. Android calls <code>onItemClick()</code> for you and passes the <strong>position</strong> of the row that was tapped.</p>
+<aside class="callout tip">
+<p class="callout-title">Tip</p>
+<p>Inside the listener, <code>this</code> means the listener, not the Activity. That is why the Toast uses <code>MainActivity.this</code>. If you used the Toast autocomplete, check that its first argument is <code>MainActivity.this</code>.</p>
+</aside>
+<aside class="callout checkpoint">
+<p class="callout-title">Checkpoint</p>
+<p>Show your list with the bold rows, and tap two names.</p>
+</aside>
+</li>
+</ol>
+<div class="exercise">
+<p class="exercise-head"><span>Discussion 1</span></p>
+<p><strong>a.  </strong>Point to the three parts of the picture at the start of this activity in <strong>your code</strong>: which line is the data, which is the Adapter, and which is the view?</p>
+<p><strong>b.  </strong>We wrote <code>textSize="16sp"</code> but <code>padding="10dp"</code>. Why do we use <strong>sp</strong> for text and <strong>dp</strong> for everything else? (Try <strong>Settings › Display › Font size</strong> on the emulator.)</p>
+<p><strong>c.  </strong>The tap gives you a <code>position</code> (0, 1, 2…) and not the name. Why is the position enough?</p>
+<p><strong>d.  </strong>We now want a <strong>picture</strong> and a <strong>phone number</strong> in every row. Why can the <code>ArrayAdapter</code> not do this? (Look at what it needs the row root to be.)</p>
+</div>
+</section>
+
+<section class="step" id="activity-2-recyclerview-with-a-custom-adapter" data-minutes="50">
+<h2>Activity 2 – RecyclerView with a custom Adapter</h2>
+<p>Each contact now has <strong>three</strong> pieces of data: a picture, a name and a phone number. The <code>ArrayAdapter</code> can only put one <code>String</code> into one <code>TextView</code>, so we write <strong>our own Adapter</strong>. We also switch to <code>RecyclerView</code>, which is what new Android apps use for lists.</p>
+<figure><img src="assets/img/fig05.png" alt="Screenshot" width="520" loading="lazy"></figure>
+<p class="fig-cap">The Adapter turns the data into row views (with a ViewHolder). The RecyclerView uses a LayoutManager to place the rows.</p>
+<aside class="callout note">
+<p class="callout-title">What you need for a RecyclerView</p>
+<p><strong>1.  A data class</strong>: <code>ContactVO</code> holds one contact (picture, name, phone).</p>
+<p><strong>2.  A row layout</strong>: <code>item_contact.xml</code>, the design of one row.</p>
+<p><strong>3.  An Adapter class</strong> with a <strong>ViewHolder</strong> and three methods: <code>onCreateViewHolder()</code>, <code>onBindViewHolder()</code> and <code>getItemCount()</code>.</p>
+<p><strong>4.  A `RecyclerView`</strong> in the Activity layout.</p>
+<p><strong>5.  Connect them</strong> in <code>onCreate()</code>: <code>setLayoutManager()</code> and <code>setAdapter()</code>.</p>
+</aside>
+<div class="table-wrap"><table>
+<thead><tr><th><strong>Requirement</strong></th><th><strong>Where you do it in this activity</strong></th></tr></thead>
+<tbody>
+<tr><td>1. Data class and data</td><td>Steps 2–4</td></tr>
+<tr><td>2. Row layout</td><td>Step 5</td></tr>
+<tr><td>3. Adapter and ViewHolder</td><td>Steps 7–11</td></tr>
+<tr><td>4. RecyclerView in the layout</td><td>Step 6</td></tr>
+<tr><td>5. Connect them</td><td>Step 12</td></tr>
+</tbody>
+</table></div>
+<ol class="steps">
+<li>Create a new project named <code>ContactCards</code> (<strong>Java</strong>, <strong>Empty Views Activity</strong>).
+</li>
+<li>Copy the seven contact pictures <code>profile1.png</code> … <code>profile7.png</code> (in the lab files) into <strong>app/src/main/res/drawable</strong>. You can paste them straight onto the <strong>drawable</strong> folder in Android Studio.
+<aside class="callout tip">
+<p class="callout-title">Tip</p>
+<p>No pictures? Right-click <strong>res/drawable</strong>, choose <strong>New › Vector Asset</strong>, pick the <strong>person</strong> clip art and name it <code>ic_person</code>. Then use <code>R.drawable.ic_person</code> for all seven contacts in step 4.</p>
+</aside>
+</li>
+<li>Create the <strong>data class</strong>. Right-click the <strong>com.example.contactcards</strong> package, choose <strong>New › Java Class</strong>, and name it <code>ContactVO</code> (VO = value object: a class that only holds data). Type the fields and the constructor:
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/contactcards/ContactVO.java</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">public class ContactVO {</span><span class="line hl">&#8203;</span><span class="line hl">    private final int profilePic;     // a drawable id, for example R.drawable.profile1</span><span class="line hl">    private final String name;</span><span class="line hl">    private final String phoneNo;</span><span class="line hl">&#8203;</span><span class="line hl">    public ContactVO(int profilePic, String name, String phoneNo) {</span><span class="line hl">        this.profilePic = profilePic;</span><span class="line hl">        this.name = name;</span><span class="line hl">        this.phoneNo = phoneNo;</span><span class="line hl">    }</span><span class="line hl">&#8203;</span><span class="line cm todo">    // TODO: add the three getters</span><span class="line hl">}</span></code></pre></div>
+<p>Do not type the getters. Click inside the class, press <strong>Alt + Insert</strong> (Windows) or <strong>Cmd + N</strong> (Mac), choose <strong>Getter</strong>, select all three fields and click <strong>OK</strong>.</p>
+<aside class="callout predict">
+<p class="callout-title">Predict first</p>
+<p>Why is <code>profilePic</code> an <code>int</code> and not an image? What is <code>R.drawable.profile1</code> really?</p>
+</aside>
+</li>
+<li>Add the <strong>data</strong>. This method makes seven <strong>dummy contacts</strong> (fake data for testing). Later in the course this data will come from a database. Add it inside <strong>MainActivity</strong>:
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/contactcards/MainActivity.java (inside the class)</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">    // dummy data: later this comes from a database</span><span class="line hl">    private List&lt;ContactVO&gt; fetchAllContactRecords() {</span><span class="line hl">        List&lt;ContactVO&gt; contacts = new ArrayList&lt;&gt;();</span><span class="line hl">        contacts.add(new ContactVO(R.drawable.profile1, "Kristofer", "(959) 283-2626"));</span><span class="line hl">        contacts.add(new ContactVO(R.drawable.profile2, "Vernita", "(214) 334-2564"));</span><span class="line hl">        contacts.add(new ContactVO(R.drawable.profile3, "Rubie", "(917) 983-1192"));</span><span class="line hl">        contacts.add(new ContactVO(R.drawable.profile4, "Bobbye", "(958) 826-5902"));</span><span class="line hl">        contacts.add(new ContactVO(R.drawable.profile5, "Harley", "(548) 554-6564"));</span><span class="line hl">        contacts.add(new ContactVO(R.drawable.profile6, "Christia", "(941) 859-1470"));</span><span class="line hl">        contacts.add(new ContactVO(R.drawable.profile7, "Jacqualine", "(925) 448-3657"));</span><span class="line hl">        return contacts;</span><span class="line hl">    }</span></code></pre></div>
+</li>
+<li>Design <strong>one row</strong>. It is a horizontal <code>LinearLayout</code> with two columns: the picture, and a vertical <code>LinearLayout</code> with the name and the phone number.
+<figure><img src="assets/img/fig06.png" alt="Screenshot" width="430" loading="lazy"></figure>
+</li>
+</ol>
+<p>Create a new layout resource file named <code>item_contact</code> (Root element <code>LinearLayout</code>) and replace its content. The phone <code>TextView</code> is left for you:</p>
+<div class="code"><div class="code-head"><span class="code-file">res/layout/item_contact.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span><span class="line hl">&lt;!-- Design of ONE contact row --&gt;</span><span class="line hl">&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"</span><span class="line hl">    android:layout_width="match_parent"</span><span class="line hl">    android:layout_height="wrap_content"</span><span class="line hl">    android:orientation="horizontal"</span><span class="line hl">    android:gravity="center_vertical"</span><span class="line hl">    android:padding="8dp"&gt;</span><span class="line hl">&#8203;</span><span class="line hl">    &lt;!-- first column: profile picture --&gt;</span><span class="line hl">    &lt;ImageView</span><span class="line hl">        android:id="@+id/ivPhoto"</span><span class="line hl">        android:layout_width="56dp"</span><span class="line hl">        android:layout_height="56dp"</span><span class="line hl">        android:layout_marginEnd="12dp"</span><span class="line hl">        android:contentDescription="Profile picture"</span><span class="line hl">        android:src="@drawable/profile1" /&gt;</span><span class="line hl">&#8203;</span><span class="line hl">    &lt;!-- second column: name and phone, one under the other --&gt;</span><span class="line hl">    &lt;LinearLayout</span><span class="line hl">        android:layout_width="0dp"</span><span class="line hl">        android:layout_height="wrap_content"</span><span class="line hl">        android:layout_weight="1"</span><span class="line hl">        android:orientation="vertical"&gt;</span><span class="line hl">&#8203;</span><span class="line hl">        &lt;TextView</span><span class="line hl">            android:id="@+id/tvName"</span><span class="line hl">            android:layout_width="match_parent"</span><span class="line hl">            android:layout_height="wrap_content"</span><span class="line hl">            android:text="Name"</span><span class="line hl">            android:textSize="22sp"</span><span class="line hl">            android:textStyle="bold" /&gt;</span><span class="line hl">&#8203;</span><span class="line cm todo">        &lt;!-- TODO: a TextView with the id tvPhone, text "Phone", textSize 16sp --&gt;</span><span class="line hl">&#8203;</span><span class="line hl">    &lt;/LinearLayout&gt;</span><span class="line hl">&lt;/LinearLayout&gt;</span></code></pre></div>
+<aside class="callout predict">
+<p class="callout-title">Predict first</p>
+<p>Look at the root: <code>layout_height="wrap_content"</code>. What would one row look like inside the list if it were <code>match_parent</code>? (You will test it in the bug hunt.)</p>
+</aside>
+<ol class="steps" start="6" style="--start:5">
+<li>Open <strong>activity_main.xml</strong> and replace its content with a <code>RecyclerView</code>:
+<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span><span class="line hl">&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"</span><span class="line hl">    xmlns:tools="http://schemas.android.com/tools"</span><span class="line hl">    android:id="@+id/main"</span><span class="line hl">    android:layout_width="match_parent"</span><span class="line hl">    android:layout_height="match_parent"</span><span class="line hl">    android:orientation="vertical"</span><span class="line hl">    tools:context=".MainActivity"&gt;</span><span class="line hl">&#8203;</span><span class="line hl">    &lt;androidx.recyclerview.widget.RecyclerView</span><span class="line hl">        android:id="@+id/recyclerView"</span><span class="line hl">        android:layout_width="match_parent"</span><span class="line hl">        android:layout_height="match_parent" /&gt;</span><span class="line hl">&#8203;</span><span class="line hl">&lt;/LinearLayout&gt;</span></code></pre></div>
+<aside class="callout tip">
+<p class="callout-title">Tip</p>
+<p><code>RecyclerView</code> is not part of the core Android framework. It comes from the <strong>AndroidX</strong> library, which is why the tag has the full package name. The Empty Views Activity template already includes it through the Material library. If the tag stays red, add the library in two places and click <strong>Sync Now</strong>:</p>
+<p><strong>1.  gradle/libs.versions.toml</strong>: under <code>[versions]</code> add <code>recyclerview = "1.4.0"</code>, and under <code>[libraries]</code> add <code>recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }</code></p>
+<p><strong>2.  build.gradle.kts (Module :app)</strong>: in <code>dependencies { }</code> add <code>implementation(libs.recyclerview)</code></p>
+<p>Or let Android Studio do it: <strong>File › Project Structure › Dependencies › app › + › Library Dependency</strong>, search for <code>recyclerview</code>, and click <strong>OK</strong>.</p>
+</aside>
+</li>
+<li>Now the <strong>Adapter</strong>. Create a new Java class named <code>ContactListAdapter</code> and make it extend <code>RecyclerView.Adapter</code>. The <code>&lt;ContactListAdapter.ViewHolder&gt;</code> part says which ViewHolder class it uses. We write that class in step 9.
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/contactcards/ContactListAdapter.java</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">public class ContactListAdapter extends RecyclerView.Adapter&lt;ContactListAdapter.ViewHolder&gt; {</span><span class="line hl">&#8203;</span><span class="line hl">}</span></code></pre></div>
+</li>
+<li>The class name is underlined in red because <code>RecyclerView.Adapter</code> is <strong>abstract</strong>: it has three methods that every Adapter must write. Hover over the red line, click <strong>Implement methods</strong>, keep all three selected and click <strong>OK</strong>.
+<figure><img src="assets/img/fig07.png" alt="Screenshot" width="420" loading="lazy"></figure>
+<figure><img src="assets/img/fig08.png" alt="Screenshot" width="170" loading="lazy"></figure>
+</li>
+</ol>
+<div class="exercise">
+<p class="exercise-head"><span>Discussion: before we fill in the three methods</span></p>
+<p>Read the three method names. Which one do you think <strong>(a)</strong> makes a new row view, <strong>(b)</strong> puts one contact’s data into a row, and <strong>(c)</strong> tells the RecyclerView how many rows there are?</p>
+</div>
+<ol class="steps" start="9" style="--start:8">
+<li>Add the <strong>ViewHolder</strong> inside the Adapter class, plus the data field and a constructor. A ViewHolder keeps the references to the views in <strong>one row</strong>, so <code>findViewById()</code> runs only once per row view, not every time a row scrolls onto the screen.
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/contactcards/ContactListAdapter.java (inside the class, at the top)</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">    private final List&lt;ContactVO&gt; contacts;   // the data</span><span class="line hl">&#8203;</span><span class="line hl">    public ContactListAdapter(List&lt;ContactVO&gt; contacts) {</span><span class="line hl">        this.contacts = contacts;</span><span class="line hl">    }</span><span class="line hl">&#8203;</span><span class="line hl">    // holds the views of ONE row (item_contact.xml)</span><span class="line hl">    public static class ViewHolder extends RecyclerView.ViewHolder {</span><span class="line hl">        final ImageView ivPhoto;</span><span class="line hl">        final TextView tvName;</span><span class="line hl">        final TextView tvPhone;</span><span class="line hl">&#8203;</span><span class="line hl">        public ViewHolder(View view) {</span><span class="line hl">            super(view);</span><span class="line hl">            ivPhoto = view.findViewById(R.id.ivPhoto);</span><span class="line hl">            tvName = view.findViewById(R.id.tvName);</span><span class="line cm todo">            tvPhone = ____;</span><span class="line hl">        }</span><span class="line hl">    }</span></code></pre></div>
+</li>
+<li>Fill in <code>onCreateViewHolder()</code>. It <strong>inflates</strong> <code>item_contact.xml</code>: it turns the XML into real View objects, and wraps them in a ViewHolder.
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/contactcards/ContactListAdapter.java</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">    @NonNull</span><span class="line">    @Override</span><span class="line">    public ContactListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent,</span><span class="line">                                                           int viewType) {</span><span class="line hl">        View view = LayoutInflater.from(parent.getContext())</span><span class="line hl">                .inflate(R.layout.item_contact, parent, false);</span><span class="line hl">        return new ViewHolder(view);</span><span class="line">    }</span></code></pre></div>
+<p><code>false</code> means: use <code>parent</code> only to read the layout sizes, but do <strong>not</strong> add the row to it yet. The RecyclerView adds the row itself when it needs it.</p>
+</li>
+<li>Fill in <code>onBindViewHolder()</code> and <code>getItemCount()</code>. <code>onBindViewHolder()</code> gets a ViewHolder and a <strong>position</strong>, and puts the data of that contact into the row. Complete the TODO and the blank:
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/contactcards/ContactListAdapter.java</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">    @Override</span><span class="line">    public void onBindViewHolder(@NonNull ContactListAdapter.ViewHolder holder,</span><span class="line">                                 int position) {</span><span class="line hl">        ContactVO contact = contacts.get(position);</span><span class="line hl">        holder.tvName.setText(contact.getName());</span><span class="line cm todo">        // TODO: set the phone number and the picture (ImageView: setImageResource)</span><span class="line">    }</span><span class="line">&#8203;</span><span class="line">    @Override</span><span class="line">    public int getItemCount() {</span><span class="line cm todo">        return ____;    // how many rows?</span><span class="line">    }</span></code></pre></div>
+</li>
+<li>Connect everything in <strong>MainActivity</strong>. Add these lines at the end of <code>onCreate()</code>, then complete the TODO and the blank:
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/contactcards/MainActivity.java (end of onCreate)</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">        // 1 data  -&gt;  2 Adapter  -&gt;  3 view</span><span class="line hl">        List&lt;ContactVO&gt; contacts = fetchAllContactRecords();</span><span class="line hl">        ContactListAdapter contactsAdapter = new ContactListAdapter(contacts);</span><span class="line hl">&#8203;</span><span class="line hl">        RecyclerView recyclerView = findViewById(R.id.recyclerView);</span><span class="line cm todo">        // TODO: set a LinearLayoutManager on recyclerView (rows one under the other)</span><span class="line cm todo">        recyclerView.setAdapter(____);</span></code></pre></div>
+</li>
+<li>Run the app. You should see the seven contacts with their pictures.
+<figure><img src="assets/img/fig09.png" alt="Screenshot" width="170" loading="lazy"></figure>
+<aside class="callout stretch">
+<p class="callout-title">YOUR TURN: add one more contact</p>
+<p>Add an <strong>8th</strong> contact record to the list in <code>fetchAllContactRecords()</code>: any name and phone number, and one of the seven pictures. Run the app again.</p>
+<p>Which files did you change? Did you need to change the Adapter or the row layout? Why not?</p>
+</aside>
+<aside class="callout predict">
+<p class="callout-title">Predict first</p>
+<p>Comment out the <code>setLayoutManager(…)</code> line. What will you see? Run the app, then look in <strong>Logcat</strong> for a message from RecyclerView. Put the line back afterwards.</p>
+</aside>
+<aside class="callout stretch">
+<p class="callout-title">YOUR TURN: change the LayoutManager</p>
+<p>Replace <code>new LinearLayoutManager(…)</code> with <code>new GridLayoutManager(this, 2)</code>. Run the app. Which file did you change, and which files did you <strong>not</strong> need to change? What does that tell you about the job of the LayoutManager?</p>
+<p>Change it back to <code>LinearLayoutManager</code> when you are done.</p>
+</aside>
+</li>
+</ol>
+<div class="exercise">
+<p class="exercise-head"><span>Discussion 2</span></p>
+<p><strong>a.  </strong>In Activity 1, the <code>ArrayAdapter</code> did the work of <code>onCreateViewHolder()</code> and <code>onBindViewHolder()</code> for us. Which line in Activity 1 matched <code>R.layout.item_contact</code>, and which matched <code>holder.tvName.setText(…)</code>?</p>
+<p><strong>b.  </strong>You never call <code>onBindViewHolder()</code> yourself. Who calls it, and how does it know the <code>position</code>?</p>
+<p><strong>c.  </strong>Why does the inner <code>LinearLayout</code> use <code>layout_width="0dp"</code> with <code>layout_weight="1"</code>? (Week 4: weights.)</p>
+</div>
+</section>
+
+<section class="step" id="activity-3-watching-the-recycling-and-handling-taps" data-minutes="25">
+<h2>Activity 3 – Watching the recycling, and handling taps</h2>
+<p>Why is it called a <strong>Recycler</strong>View? In this activity we count how many times Android <strong>creates</strong> a row view and how many times it <strong>binds</strong> data into one.</p>
+<ol class="steps">
+<li>In <strong>ContactListAdapter</strong>, add a TAG and two counters as <strong>data members</strong> of the class, then add two <code>Log.d()</code> lines:
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/contactcards/ContactListAdapter.java</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line cm">    // data members (at the top of the class, under the contacts field):</span><span class="line hl">    private static final String TAG = "ContactAdapter";</span><span class="line hl">    private int createCount = 0;</span><span class="line hl">    private int bindCount = 0;</span><span class="line">&#8203;</span><span class="line cm">    // in onCreateViewHolder(), before the return:</span><span class="line hl">        createCount++;</span><span class="line hl">        Log.d(TAG, "CREATE #" + createCount);</span><span class="line">&#8203;</span><span class="line cm">    // in onBindViewHolder(), at the top:</span><span class="line hl">        bindCount++;</span><span class="line hl">        Log.d(TAG, "BIND #" + bindCount + "  position " + position);</span></code></pre></div>
+</li>
+<li>Eight contacts all fit on the screen, so nothing needs to be recycled. Make the list <strong>long</strong> by inserting the same 8 contact records 6 times (48 contacts). In <code>onCreate()</code> of MainActivity, change the data line:
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/contactcards/MainActivity.java (in onCreate)</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line cm">        // List&lt;ContactVO&gt; contacts = fetchAllContactRecords();</span><span class="line hl">        List&lt;ContactVO&gt; contacts = new ArrayList&lt;&gt;();</span><span class="line hl">        for (int i = 0; i &lt; 6; i++) {</span><span class="line hl">            contacts.addAll(fetchAllContactRecords());   // 6 x 8 = 48 contacts</span><span class="line hl">        }</span></code></pre></div>
+<aside class="callout predict">
+<p class="callout-title">Predict first</p>
+<p>The list now has <strong>48</strong> contacts. Fill in your guesses in the first column before you run the app.</p>
+<div class="table-wrap"><table>
+<thead><tr><th></th><th><strong>My guess</strong></th><th><strong>After launch</strong></th><th><strong>After scrolling to the end</strong></th></tr></thead>
+<tbody>
+<tr><td>How many CREATE lines?</td><td></td><td></td><td></td></tr>
+<tr><td>How many BIND lines?</td><td></td><td></td><td></td></tr>
+</tbody>
+</table></div>
+</aside>
+</li>
+<li>Run the app. Open <strong>Logcat</strong>, type <code>tag:ContactAdapter</code> in the filter box, and fill in the <strong>After launch</strong> column. Then scroll slowly to the end of the list and fill in the last column.
+<figure><img src="assets/img/fig10.png" alt="Screenshot" width="420" loading="lazy"></figure>
+<p class="fig-cap">What happens when the user scrolls: a row view that leaves the screen is reused for the next contact</p>
+</li>
+</ol>
+<div class="exercise">
+<p class="exercise-head"><span>Discussion 3</span></p>
+<p><strong>a.  </strong>Why did CREATE stop at a small number, while BIND kept going? Use the picture above to explain it.</p>
+<p><strong>b.  </strong>A phone has 10,000 contacts. Without recycling, how many row views would the app create? Why is that a problem on a phone?</p>
+<p><strong>c.  </strong>Now explain the job of the ViewHolder again. Why is it useful that <code>findViewById()</code> is in the ViewHolder and <strong>not</strong> in <code>onBindViewHolder()</code>?</p>
+</div>
+<ol class="steps" start="4" style="--start:3">
+<li>Make the rows respond to a tap. <code>RecyclerView</code> has <strong>no</strong> <code>setOnItemClickListener()</code> like ListView. Instead, each row view gets its own click listener. <code>holder.itemView</code> is the whole row. Add this at the end of <code>onBindViewHolder()</code> and fill in the blank so the Toast shows, for example, <strong>Rubie: (917) 983-1192</strong>:
+<aside class="callout type">
+<p class="callout-title">Type it: use autocomplete, do not copy</p>
+<p>Same as in Activity 1: type <code>holder.itemView.setOnClickListener(new On</code>, pick <strong>OnClickListener</strong> (android.view.View) and press <strong>Enter</strong>. Then type only the two lines inside <code>onClick()</code>.</p>
+</aside>
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/contactcards/ContactListAdapter.java (end of onBindViewHolder)</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">        holder.itemView.setOnClickListener(new View.OnClickListener() {</span><span class="line hl">            @Override</span><span class="line hl">            public void onClick(View v) {</span><span class="line cm todo">                String message = ____;   // for example "Rubie: (917) 983-1192"</span><span class="line hl">                Toast.makeText(v.getContext(), message, Toast.LENGTH_SHORT).show();</span><span class="line hl">            }</span><span class="line hl">        });</span></code></pre></div>
+<aside class="callout tip">
+<p class="callout-title">Tip</p>
+<p>The Adapter is not an Activity, so it has no <code>this</code> to use as a Context. <code>v.getContext()</code> gets the Context from the view that was tapped.</p>
+</aside>
+<aside class="callout checkpoint">
+<p class="callout-title">Checkpoint</p>
+<p>Tap three contacts, then show your filled-in Logcat table.</p>
+</aside>
+<aside class="callout stretch">
+<p class="callout-title">YOUR TURN (if you finish early): long-press to delete</p>
+<p>When the user long-presses a row, remove that contact from the list. Use <code>holder.itemView.setOnLongClickListener(new View.OnLongClickListener() { … })</code>. Its method is <code>public boolean onLongClick(View v)</code> and it must return <code>true</code>.</p>
+<p>Inside it, get the row’s current position with <code>holder.getBindingAdapterPosition()</code>, remove that item from <code>contacts</code>, and call <code>notifyItemRemoved(pos)</code> so the RecyclerView animates the change.</p>
+<p><strong>Think about it:</strong> why should you not use the <code>position</code> parameter of <code>onBindViewHolder()</code> here? Delete the first row, then long-press the last row and see.</p>
+</aside>
+</li>
+</ol>
+</section>
+
+<section class="step" id="activity-4-bug-hunt" data-minutes="15">
+<h2>Activity 4 – Bug hunt</h2>
+<p>Each snippet below has <strong>one</strong> change from your working ContactCards or ContactList app. First write down what you think happens: an empty list, a crash, or a strange layout. Then try the ones we pick in class, and compare.</p>
+<div class="table-wrap"><table>
+<thead><tr><th><strong>#</strong></th><th><strong>The change</strong></th><th><strong>My prediction</strong></th><th><strong>What really happens</strong></th></tr></thead>
+<tbody>
+<tr><td>1</td><td>In <code>getItemCount()</code>: <code>return 0;</code></td><td></td><td></td></tr>
+<tr><td>2</td><td>The <code>recyclerView.setLayoutManager(…)</code> line is deleted.</td><td></td><td></td></tr>
+<tr><td>3</td><td>In <strong>item_contact.xml</strong>, the root has <code>android:layout_height="match_parent"</code>.</td><td></td><td></td></tr>
+<tr><td>4</td><td>In <code>onCreateViewHolder()</code>: <code>.inflate(R.layout.item_contact, parent, true)</code></td><td></td><td></td></tr>
+<tr><td>5</td><td>In Activity 1: <code>new ArrayAdapter&lt;&gt;(this, R.layout.item_contact, contacts)</code> (a row whose root is a LinearLayout).</td><td></td><td></td></tr>
+<tr><td>6</td><td>In <code>onBindViewHolder()</code>: <code>holder.tvPhone.setText(contact.getPhoneNo().length());</code></td><td></td><td></td></tr>
+</tbody>
+</table></div>
+<div class="exercise">
+<p class="exercise-head"><span>Discussion 4</span></p>
+<p><strong>a.  </strong>Two of the bugs give an <strong>empty screen with no crash</strong>. Which ones? Where would you look first to find the cause?</p>
+<p><strong>b.  </strong>Bug 6 crashes with <code>Resources$NotFoundException</code>. <code>setText()</code> has a version that takes an <code>int</code>. What does Android think that <code>int</code> is?</p>
+</div>
+</section>
+
+<section class="step" id="post-lab-assignment-10-marks" data-minutes="60">
+<h2>Post-Lab Assignment (10 marks)</h2>
+<p>Start from your <strong>ContactCards</strong> project. Remove the 6× loop from Activity 3, so each contact appears once.</p>
+<p>Modify the app to show each contact’s <strong>email address</strong> under the phone number. Use these emails for the seven contacts, and make up one for the 8th contact you added:</p>
+<div class="table-wrap"><table>
+<thead><tr><th><strong>Contact</strong></th><th><strong>Email</strong></th></tr></thead>
+<tbody>
+<tr><td>Kristofer</td><td>kristofer@aol.com</td></tr>
+<tr><td>Vernita</td><td>vernita@yahoo.com</td></tr>
+<tr><td>Rubie</td><td>rubie@msn.com</td></tr>
+<tr><td>Bobbye</td><td>bobbye@gmail.com</td></tr>
+<tr><td>Harley</td><td>harley@davidson.com</td></tr>
+<tr><td>Christia</td><td>christia@rocketmail.com</td></tr>
+<tr><td>Jacqualine</td><td>jacqualine@uitm.edu.my</td></tr>
+</tbody>
+</table></div>
+<figure><img src="assets/img/fig11.png" alt="Screenshot" width="380" loading="lazy"></figure>
+<p class="fig-cap">One row of the finished app</p>
+<p>Then add <strong>one more contact</strong> with <strong>your own name</strong>, phone number and email (any picture).</p>
+<p>Record a short video (at most 3 minutes) that shows the app running and explains the changes you made to the Data, the Layout and the Adapter.</p>
+<p><strong>Marks:</strong> the 10 marks are given for the <strong>video explanation</strong>.</p>
+</section>
+  </main>
+</div>
+<div class="nav">
+  <button class="back" id="back" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.4 7.4 14 6l-6 6 6 6 1.4-1.4L10.8 12z"/></svg>Back</button>
+  <button class="next" id="next" type="button">Next<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6 8.6 7.4 13.2 12l-4.6 4.6L10 18l6-6z"/></svg></button>
+</div>
+<script src="assets/codelab.js?v=2"></script>
+</body>
+</html>
