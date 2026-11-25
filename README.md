@@ -8,5 +8,7 @@ Lab worksheets for CSC557 Mobile Programming (Android, Java, XML Views), publish
 | 5 | [Android Activity Lab: Activities, Intents and Fragments](week5/) |
 | 6 | [User Interaction Lab: Input Controls and Dialogs](week6/) |
 | 7 | [Menus and WebView Lab: Options Menu, Context Menu and WebView](week7/) |
+| 8 | [List View Lab: ListView, RecyclerView and Adapters](week8/) |
+| 9 | [User Login with SQLite Lab: SQLiteOpenHelper, Login Query and Session](week9/) |
 
 Each lab is a static page (no build step). To add a week, copy `week4/` to a new folder, keep `assets/codelab.css` and `assets/codelab.js`, and edit `index.html`. Each step is a `<section class="step" id="..." data-minutes="...">`.
