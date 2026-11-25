@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>User Login with SQLite Lab</title>
+<meta name="description" content="Week 9 lab for CSC557 Mobile Programming: a login screen backed by SQLite with SQLiteOpenHelper, the Database Inspector, a login query, and a SharedPreferences session (Java, XML Views).">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/codelab.css?v=2">
+<style>.line.cm { color: var(--muted); font-style: italic; }
+.line.todo { color: #b3261e; font-style: normal; font-weight: 600; background: rgba(179,38,30,.10); }
+@media (prefers-color-scheme: dark) { .line.todo { color: #f2b8b5; background: rgba(242,184,181,.12); } }
+.callout.type { background: #e0f4f5; border-color: #00838f; }
+.callout.type .callout-title { color: #006064; }
+@media (prefers-color-scheme: dark) { .callout.type { background: rgba(0,131,143,.16); } .callout.type .callout-title { color: #80deea; } }
+.fig-cap { text-align: center; color: var(--muted); font-size: .88em; font-style: italic; margin-top: -6px; }</style>
+</head>
+<body data-title="User Login with SQLite Lab">
+<header class="topbar">
+  <button class="menu-btn" id="menu" type="button" aria-label="Show steps"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></button>
+  <div class="topbar-title"><h1>User Login with SQLite Lab</h1><div class="course">CSC557 Mobile Programming · Week 9</div></div>
+  <div class="remaining"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7z"/></svg><span><span id="remaining-min">0</span> min<span class="txt-long"> remaining</span></span></div>
+</header>
+<div class="shell">
+  <nav class="sidebar" aria-label="Lab steps"><ol class="toc" id="toc"></ol></nav>
+  <div class="scrim" id="scrim"></div>
+  <main>
+<section class="step" id="introduction" data-minutes="5">
+<h2>Introduction</h2>
+<p class="eyebrow">Lab Activity 8 · Week 9 · CSC557 Mobile Programming</p>
+<h3>Objectives</h3>
+<ul class="checklist">
+<li>Creating a SQLite database and a table with <code>SQLiteOpenHelper</code></li><li>Adding rows with <code>ContentValues</code> and reading them back with a <code>Cursor</code></li><li>Storing a password as a <strong>hash</strong>, never as the text the user typed</li><li>Checking a login with a safe query (the <code>?</code> placeholder)</li><li>Remembering who logged in with <code>SharedPreferences</code>, and logging out</li>
+</ul>
+<p><strong>Duration:</strong> 2 hours. <strong>You need:</strong> Android Studio and an emulator or Android phone.</p>
+<div class="table-wrap"><table class="marks">
+<thead><tr><th><strong>Part</strong></th><th><strong>What you do</strong></th><th><strong>Time</strong></th><th><strong>Marks</strong></th></tr></thead>
+<tbody>
+<tr><td>Activity 1: The login screen</td><td>Create the project, the login layout and the User class</td><td>20 min</td><td>–</td></tr>
+<tr><td>Activity 2: Create the database</td><td>Build the users table and add three accounts</td><td>30 min</td><td>–</td></tr>
+<tr><td>Activity 3: Check the login</td><td>Query the table and check the password</td><td>30 min</td><td>–</td></tr>
+<tr><td>Activity 4: Remember the user</td><td>Keep the session in SharedPreferences, then log out</td><td>25 min</td><td>–</td></tr>
+<tr><td>Activity 5: Bug hunt</td><td>Predict what six broken snippets do</td><td>15 min</td><td>–</td></tr>
+<tr><td>Post-Lab (after the lab)</td><td>Login with email, new roles, inactive accounts</td><td>–</td><td>10</td></tr>
+<tr><td><strong>Total</strong></td><td></td><td><strong>120 min</strong></td><td><strong>10</strong></td></tr>
+</tbody>
+</table></div>
+<p>The questions in the activities are for class discussion and are not marked. Only the Post-Lab is marked (10 marks).</p>
+<h3>How to use this lab</h3>
+<p>We build the app together in class. This lab does <strong>not</strong> give you all the code. Some parts are complete, some have blanks, and some give you only a specification. The parts look like this:</p>
+<div class="code"><div class="code-head"><span class="code-file">Example.java</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line cm">// grey italic: code that is already in the file</span><span class="line hl">// yellow: new code that is given to you, type it in</span><span class="line cm todo">// red: a TODO or a ____ blank that YOU must complete</span></code></pre></div>
+<div class="table-wrap"><table>
+<thead><tr><th><strong>Box</strong></th><th><strong>What it means</strong></th></tr></thead>
+<tbody>
+<tr><td>TYPE IT</td><td>Android Studio writes most of this code for you. Follow the steps and use autocomplete instead of copying.</td></tr>
+<tr><td>PREDICT FIRST</td><td>Write down what you think will happen <strong>before</strong> you run the app. Then run it and compare. A wrong guess is fine: it is how you learn.</td></tr>
+<tr><td>YOUR TURN</td><td>A task with a specification and little or no code. Build it from what you learned in the activity.</td></tr>
+<tr><td>CHECKPOINT</td><td>Show your app to the lecturer or the person beside you before you move on.</td></tr>
+<tr><td>Discussion</td><td>Questions we discuss in class. They are not marked.</td></tr>
+</tbody>
+</table></div>
+<h3>The big picture</h3>
+<p>Many apps ask the user to sign in. In this lab the user accounts are kept in a <strong>SQLite database</strong> inside the app. SQLite is part of Android, so you do not add any library and you do not need any permission. Signing in is an ordinary database query: find the account, check the password, and remember who logged in.</p>
+<figure><img src="assets/img/fig01.png" alt="Screenshot" width="620" loading="lazy"></figure>
+<p class="fig-cap">What happens when the user taps LOGIN, step by step. Keep this picture in mind for the whole lab.</p>
+<aside class="callout note">
+<p class="callout-title">What you need for a login with SQLite</p>
+<p><strong>1.  A helper class</strong> that extends <code>SQLiteOpenHelper</code>. Its <code>onCreate()</code> creates the table the first time the app runs.</p>
+<p><strong>2.  Hashed passwords.</strong> The table stores a hash of each password, never the password itself.</p>
+<p><strong>3.  A safe query.</strong> The username typed by the user goes into the query through a <code>?</code> placeholder.</p>
+<p><strong>4.  A session.</strong> After a good login, the app saves who logged in with <code>SharedPreferences</code>.</p>
+<p><strong>5.  A check at start-up.</strong> When the app opens, it looks for a session before it shows the login screen.</p>
+</aside>
+</section>
+
+<section class="step" id="activity-1-the-login-screen-and-the-user-class" data-minutes="20">
+<h2>Activity 1 – The login screen and the User class</h2>
+<p>We start with the parts that have nothing to do with the database: a project with two screens, and a class that holds one user.</p>
+<ol class="steps">
+<li>Create a new Android project named <code>UserLogin</code> using the <strong>Java</strong> language. Choose <strong>Empty Views Activity</strong> as the template.
+</li>
+<li>Add a second screen. Right-click the package <code>com.example.userlogin</code> and choose <strong>New › Activity › Empty Views Activity</strong>. Name it <code>LoginActivity</code> and click <strong>Finish</strong>. Android Studio creates <strong>LoginActivity.java</strong> and <strong>activity_login.xml</strong>.
+</li>
+<li>The login screen must open first. Open <strong>AndroidManifest.xml</strong> and <strong>move</strong> the <code>&lt;intent-filter&gt;</code> from MainActivity to LoginActivity. Set <code>android:exported</code> as shown:
+<div class="code"><div class="code-head"><span class="code-file">AndroidManifest.xml (inside &lt;application&gt;)</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">        &lt;activity</span><span class="line hl">            android:name=".LoginActivity"</span><span class="line hl">            android:exported="true"&gt;</span><span class="line hl">            &lt;intent-filter&gt;</span><span class="line hl">                &lt;action android:name="android.intent.action.MAIN" /&gt;</span><span class="line hl">                &lt;category android:name="android.intent.category.LAUNCHER" /&gt;</span><span class="line hl">            &lt;/intent-filter&gt;</span><span class="line hl">        &lt;/activity&gt;</span><span class="line hl">        &lt;activity</span><span class="line hl">            android:name=".MainActivity"</span><span class="line hl">            android:exported="false" /&gt;</span></code></pre></div>
+</li>
+<li>Open <strong>res/layout/activity_login.xml</strong> in <strong>Code</strong> view and replace its content:
+<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_login.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span><span class="line hl">&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"</span><span class="line hl">    xmlns:tools="http://schemas.android.com/tools"</span><span class="line hl">    android:id="@+id/main"</span><span class="line hl">    android:layout_width="match_parent"</span><span class="line hl">    android:layout_height="match_parent"</span><span class="line hl">    android:orientation="vertical"</span><span class="line hl">    android:padding="32dp"</span><span class="line hl">    tools:context=".LoginActivity"&gt;</span><span class="line hl">&#8203;</span><span class="line hl">    &lt;TextView</span><span class="line hl">        android:layout_width="match_parent"</span><span class="line hl">        android:layout_height="wrap_content"</span><span class="line hl">        android:layout_marginTop="48dp"</span><span class="line hl">        android:layout_marginBottom="24dp"</span><span class="line hl">        android:gravity="center"</span><span class="line hl">        android:text="Sign in"</span><span class="line hl">        android:textSize="24sp"</span><span class="line hl">        android:textStyle="bold" /&gt;</span><span class="line hl">&#8203;</span><span class="line hl">    &lt;EditText</span><span class="line hl">        android:id="@+id/edtUsername"</span><span class="line hl">        android:layout_width="match_parent"</span><span class="line hl">        android:layout_height="wrap_content"</span><span class="line hl">        android:hint="Username"</span><span class="line hl">        android:inputType="text" /&gt;</span><span class="line hl">&#8203;</span><span class="line cm todo">    &lt;!-- TODO: an EditText with id edtPassword, hint "Password"</span><span class="line cm todo">         and an inputType that hides the characters --&gt;</span><span class="line hl">&#8203;</span><span class="line hl">    &lt;Button</span><span class="line hl">        android:id="@+id/btnLogin"</span><span class="line hl">        android:layout_width="wrap_content"</span><span class="line hl">        android:layout_height="wrap_content"</span><span class="line hl">        android:layout_gravity="center_horizontal"</span><span class="line hl">        android:layout_marginTop="24dp"</span><span class="line hl">        android:text="LOGIN" /&gt;</span><span class="line hl">&#8203;</span><span class="line hl">&lt;/LinearLayout&gt;</span></code></pre></div>
+<p>Keep <code>android:id="@+id/main"</code> on the root. The template’s LoginActivity uses <code>R.id.main</code> to add padding for the status bar.</p>
+</li>
+<li>Now the class that holds <strong>one user</strong>, one row of the table. Right-click the package and choose <strong>New › Java Class</strong>. Name it <code>User</code> and type the fields:
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/userlogin/User.java</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">public class User {</span><span class="line">&#8203;</span><span class="line hl">    private long id;</span><span class="line hl">    private String username;</span><span class="line hl">    private String email;</span><span class="line hl">    private String role;</span><span class="line hl">    private boolean active;</span><span class="line">&#8203;</span><span class="line">}</span></code></pre></div>
+<aside class="callout type">
+<p class="callout-title">Type it: use autocomplete, do not copy</p>
+<p>Do not type the getters and setters. Let Android Studio write them:</p>
+<p><strong>1.  </strong>Put the cursor on the empty line before the last <code>}</code> and press <strong>Alt + Insert</strong> (Windows) or <strong>Cmd + N</strong> (Mac).</p>
+<p><strong>2.  </strong>Choose <strong>Getter and Setter</strong>, select <strong>all five fields</strong> with Shift + click, and press <strong>OK</strong>.</p>
+<p><strong>3.  </strong>Check that you now have <code>getId()</code>, <code>setId()</code>, … and <code>isActive()</code> / <code>setActive()</code>. A boolean getter starts with <strong>is</strong>, not get.</p>
+</aside>
+<p>Notice that <code>User</code> has <strong>no password field</strong>. After a login succeeds the app has no reason to keep the password in memory.</p>
+<aside class="callout checkpoint">
+<p class="callout-title">Checkpoint</p>
+<p>Run the app. The Sign in screen must open first. The LOGIN button does nothing yet.</p>
+</aside>
+</li>
+</ol>
+</section>
+
+<section class="step" id="activity-2-create-the-database" data-minutes="30">
+<h2>Activity 2 – Create the database</h2>
+<p>Android gives us <code>SQLiteOpenHelper</code> to look after the database file. We extend it and fill in two methods. <code>onCreate()</code> runs <strong>only once</strong>, when the database file does not exist yet: this is where we create the table and add the first accounts. <code>onUpgrade()</code> runs when we increase the version number.</p>
+<h3>Step 1: the password helper</h3>
+<p>A password must never be written into the database as typed. Anyone with a rooted phone or a backup can read the database file, and people use the same password in many apps. So we store a <strong>hash</strong>: a long code made from the password and a random <strong>salt</strong>. The same password with a different salt gives a completely different hash. To check a login, we hash the typed password again with the stored salt and compare.</p>
+<figure><img src="assets/img/fig02.png" alt="Screenshot" width="600" loading="lazy"></figure>
+<p class="fig-cap">How PasswordUtil.verify() checks a password. The stored value has the form salt:hash.</p>
+<ol class="steps">
+<li>Create a new Java class named <code>PasswordUtil</code>. This is the <strong>only</strong> file in this lab that you may copy: hashing is not the topic of this lab. Read the comments.
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/userlogin/PasswordUtil.java</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">import android.util.Base64;</span><span class="line hl">&#8203;</span><span class="line hl">import java.security.MessageDigest;</span><span class="line hl">import java.security.SecureRandom;</span><span class="line hl">import java.security.spec.KeySpec;</span><span class="line hl">&#8203;</span><span class="line hl">import javax.crypto.SecretKeyFactory;</span><span class="line hl">import javax.crypto.spec.PBEKeySpec;</span><span class="line hl">&#8203;</span><span class="line hl">/** Hashes and checks passwords. */</span><span class="line hl">public final class PasswordUtil {</span><span class="line hl">&#8203;</span><span class="line hl">    private static final String ALGORITHM = "PBKDF2WithHmacSHA1";</span><span class="line hl">    private static final int ITERATIONS = 10000;</span><span class="line hl">    private static final int KEY_LENGTH = 256;   // bits</span><span class="line hl">    private static final int SALT_BYTES = 16;</span><span class="line hl">&#8203;</span><span class="line hl">    private PasswordUtil() { }   // no objects: we only call the static methods</span><span class="line hl">&#8203;</span><span class="line hl">    /** Returns "salt:hash", both written in Base64. */</span><span class="line hl">    public static String hash(String plainPassword) {</span><span class="line hl">        byte[] salt = new byte[SALT_BYTES];</span><span class="line hl">        new SecureRandom().nextBytes(salt);          // a new random salt every time</span><span class="line hl">        byte[] hash = pbkdf2(plainPassword, salt);</span><span class="line hl">        return encode(salt) + ":" + encode(hash);</span><span class="line hl">    }</span><span class="line hl">&#8203;</span><span class="line hl">    /** Hashes the typed password with the stored salt and compares. */</span><span class="line hl">    public static boolean verify(String plainPassword, String stored) {</span><span class="line hl">        if (stored == null) return false;</span><span class="line hl">        String[] parts = stored.split(":");</span><span class="line hl">        if (parts.length != 2) return false;         // not in the form salt:hash</span><span class="line hl">        byte[] salt = decode(parts[0]);</span><span class="line hl">        byte[] expected = decode(parts[1]);</span><span class="line hl">        byte[] actual = pbkdf2(plainPassword, salt);</span><span class="line hl">        return MessageDigest.isEqual(actual, expected);</span><span class="line hl">    }</span><span class="line hl">&#8203;</span><span class="line hl">    private static byte[] pbkdf2(String password, byte[] salt) {</span><span class="line hl">        try {</span><span class="line hl">            KeySpec spec = new PBEKeySpec(password.toCharArray(),</span><span class="line hl">                    salt, ITERATIONS, KEY_LENGTH);</span><span class="line hl">            return SecretKeyFactory.getInstance(ALGORITHM)</span><span class="line hl">                    .generateSecret(spec).getEncoded();</span><span class="line hl">        } catch (Exception e) {</span><span class="line hl">            throw new IllegalStateException("Hashing failed", e);</span><span class="line hl">        }</span><span class="line hl">    }</span><span class="line hl">&#8203;</span><span class="line hl">    private static String encode(byte[] bytes) {</span><span class="line hl">        return Base64.encodeToString(bytes, Base64.NO_WRAP);</span><span class="line hl">    }</span><span class="line hl">&#8203;</span><span class="line hl">    private static byte[] decode(String text) {</span><span class="line hl">        return Base64.decode(text, Base64.NO_WRAP);</span><span class="line hl">    }</span><span class="line hl">}</span></code></pre></div>
+</li>
+</ol>
+<h3>Step 2: the database helper</h3>
+<ol class="steps" start="2" style="--start:1">
+<li>Create a new Java class named <code>UserDbHelper</code>. Type only the first line of the class, then let Android Studio do the rest:
+<aside class="callout type">
+<p class="callout-title">Type it: use autocomplete, do not copy</p>
+<p><strong>1.  </strong>Type <code>public class UserDbHelper extends SQLiteOpenHelper {</code> (pick <strong>SQLiteOpenHelper</strong> from the list so the import is added). The class name turns red.</p>
+<p><strong>2.  </strong>Click the red name, press <strong>Alt + Enter</strong> (Mac: <strong>Option + Enter</strong>) and choose <strong>Implement methods</strong>. Select <code>onCreate</code> and <code>onUpgrade</code> and press <strong>OK</strong>.</p>
+<p><strong>3.  </strong>Press <strong>Alt + Enter</strong> on the red name again and choose <strong>Create constructor matching super</strong>. Pick the one with <strong>(Context, String, CursorFactory, int)</strong>. Then change it to match the code below.</p>
+</aside>
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/userlogin/UserDbHelper.java</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">public class UserDbHelper extends SQLiteOpenHelper {</span><span class="line">&#8203;</span><span class="line hl">    // the database file and its version</span><span class="line hl">    private static final String DB_NAME = "user_login.db";</span><span class="line hl">    private static final int DB_VERSION = 1;</span><span class="line hl">&#8203;</span><span class="line hl">    // table and column names: written once, used everywhere</span><span class="line hl">    public static final String TABLE_USERS = "users";</span><span class="line hl">    public static final String COL_ID = "_id";</span><span class="line hl">    public static final String COL_USERNAME = "username";</span><span class="line hl">    public static final String COL_EMAIL = "email";</span><span class="line hl">    public static final String COL_PASSWORD = "password";</span><span class="line hl">    public static final String COL_ROLE = "role";</span><span class="line hl">    public static final String COL_IS_ACTIVE = "is_active";</span><span class="line hl">&#8203;</span><span class="line hl">    private static final String CREATE_USERS =</span><span class="line hl">            "CREATE TABLE " + TABLE_USERS + " ("</span><span class="line hl">            + COL_ID + " INTEGER PRIMARY KEY, "</span><span class="line hl">            + COL_USERNAME + " TEXT NOT NULL UNIQUE, "</span><span class="line hl">            + COL_EMAIL + " TEXT NOT NULL UNIQUE, "</span><span class="line hl">            + COL_PASSWORD + " TEXT NOT NULL, "</span><span class="line hl">            + COL_ROLE + " TEXT NOT NULL DEFAULT 'user', "</span><span class="line hl">            + COL_IS_ACTIVE + " INTEGER NOT NULL DEFAULT 1)";</span><span class="line hl">&#8203;</span><span class="line hl">    public UserDbHelper(Context context) {</span><span class="line hl">        super(context, DB_NAME, null, DB_VERSION);</span><span class="line hl">    }</span><span class="line">&#8203;</span><span class="line">    @Override</span><span class="line">    public void onCreate(SQLiteDatabase db) {</span><span class="line hl">        db.execSQL(CREATE_USERS);</span><span class="line hl">        // three accounts to test with: the password is the same as the username</span><span class="line hl">        insertUser(db, "admin", "admin@example.com", "admin", "admin");</span><span class="line hl">        insertUser(db, "staff", "staff@example.com", "staff", "staff");</span><span class="line cm todo">        // TODO: a third account: username user, email user@example.com,</span><span class="line cm todo">        //       password user, role user</span><span class="line">    }</span><span class="line">&#8203;</span><span class="line">    @Override</span><span class="line">    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {</span><span class="line hl">        // lab version: throw the old table away and build it again</span><span class="line hl">        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);</span><span class="line hl">        onCreate(db);</span><span class="line">    }</span><span class="line">&#8203;</span><span class="line hl">    private void insertUser(SQLiteDatabase db, String username, String email,</span><span class="line hl">                            String plainPassword, String role) {</span><span class="line hl">        ContentValues values = new ContentValues();   // one row: column -&gt; value</span><span class="line hl">        values.put(COL_USERNAME, username);</span><span class="line hl">        values.put(COL_EMAIL, email);</span><span class="line hl">        // store the hash, never the plain password</span><span class="line hl">        values.put(COL_PASSWORD, PasswordUtil.hash(plainPassword));</span><span class="line hl">        values.put(COL_ROLE, role);</span><span class="line hl">        values.put(COL_IS_ACTIVE, 1);</span><span class="line hl">        db.insert(TABLE_USERS, null, values);</span><span class="line hl">    }</span><span class="line">}</span></code></pre></div>
+<aside class="callout tip">
+<p class="callout-title">Tip</p>
+<p>Use <strong>Alt + Enter</strong> (Windows) or <strong>Option + Enter</strong> (Mac) on a red class name such as <code>ContentValues</code> or <code>Context</code> to add the missing import.</p>
+</aside>
+</li>
+<li>A <code>new UserDbHelper(…)</code> does <strong>not</strong> create the file yet. The file is created the first time we ask for the database. Open <strong>LoginActivity.java</strong> and add a field and two lines at the end of <code>onCreate()</code>:
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/userlogin/LoginActivity.java</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">public class LoginActivity extends AppCompatActivity {</span><span class="line">&#8203;</span><span class="line hl">    private UserDbHelper dbHelper;</span><span class="line">&#8203;</span><span class="line">    @Override</span><span class="line">    protected void onCreate(Bundle savedInstanceState) {</span><span class="line cm">        // ... the template code stays ...</span><span class="line">&#8203;</span><span class="line hl">        dbHelper = new UserDbHelper(this);</span><span class="line hl">        dbHelper.getReadableDatabase();   // opens the database (creates it on the first run)</span><span class="line">    }</span><span class="line">}</span></code></pre></div>
+<aside class="callout predict">
+<p class="callout-title">Predict first</p>
+<p>The table will have a <strong>password</strong> column. For the account <strong>admin</strong>, what do you expect to see in that column? Write it down. Will the hash of <strong>admin</strong> and the hash of <strong>staff</strong> have the same length?</p>
+</aside>
+</li>
+<li>Run the app. While it is running, open <strong>View › Tool Windows › App Inspection</strong> and choose the <strong>Database Inspector</strong> tab. Double-click the <strong>users</strong> table.
+<figure><img src="assets/img/fig03.png" alt="Screenshot" width="600" loading="lazy"></figure>
+<p class="fig-cap">The users table in the Database Inspector. The password column holds salt:hash, not the password.</p>
+</li>
+</ol>
+<div class="exercise">
+<p class="exercise-head"><span>Discussion 2</span></p>
+<p><strong>a.  </strong>Stop the app, change the email of <strong>admin</strong> in <code>onCreate()</code>, and run again. Did the table change? Why not? What are <strong>two</strong> ways to make <code>onCreate()</code> run again?</p>
+<p><strong>b.  </strong>Uninstall the app and run it again. Are the hashes the same as before? Why is that not a problem when the user logs in?</p>
+<p><strong>c.  </strong>Why are the column names written once as constants (<code>COL_USERNAME</code> …) instead of typing <code>"username"</code> in every query?</p>
+</div>
+</section>
+
+<section class="step" id="activity-3-check-the-login" data-minutes="30">
+<h2>Activity 3 – Check the login</h2>
+<p>Checking a login is a query: find the row with this username, then check the password with <code>PasswordUtil.verify()</code>. The query returns a <code>Cursor</code>, which points at one row of the result at a time.</p>
+<ol class="steps">
+<li>Add this method to <strong>UserDbHelper</strong>, under <code>onUpgrade()</code>. Notice the <code>?</code> in <code>where</code>: when the query runs, it is replaced by the value in <code>args</code>, here the username the user typed.
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/userlogin/UserDbHelper.java</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">    /** Returns the User, or null when the username is unknown,</span><span class="line hl">        the password is wrong, or the account is not active. */</span><span class="line hl">    public User login(String username, String plainPassword) {</span><span class="line hl">        SQLiteDatabase db = getReadableDatabase();</span><span class="line hl">&#8203;</span><span class="line hl">        // SELECT * FROM users WHERE username = ?</span><span class="line hl">        String where = COL_USERNAME + " = ?";</span><span class="line hl">        String[] args = { username };          // the value for the ?</span><span class="line hl">        Cursor cursor = db.query(TABLE_USERS, null, where, args, null, null, null);</span><span class="line hl">&#8203;</span><span class="line hl">        User user = null;</span><span class="line hl">        if (cursor.moveToFirst()) {           // false when no row was found</span><span class="line hl">            String stored = cursor.getString(cursor.getColumnIndexOrThrow(COL_PASSWORD));</span><span class="line hl">            boolean active = cursor.getInt(cursor.getColumnIndexOrThrow(COL_IS_ACTIVE)) == 1;</span><span class="line hl">&#8203;</span><span class="line hl">            if (PasswordUtil.verify(plainPassword, stored) &amp;&amp; active) {</span><span class="line hl">                user = new User();</span><span class="line hl">                user.setId(cursor.getLong(cursor.getColumnIndexOrThrow(COL_ID)));</span><span class="line hl">                user.setUsername(cursor.getString(cursor.getColumnIndexOrThrow(COL_USERNAME)));</span><span class="line cm todo">                // TODO: set the email and the role in the same way</span><span class="line hl">                user.setActive(true);</span><span class="line hl">            }</span><span class="line hl">        }</span><span class="line hl">        cursor.close();                       // always close a Cursor</span><span class="line hl">        return user;</span><span class="line hl">    }</span></code></pre></div>
+<aside class="callout warning">
+<p class="callout-title">Never build a query by joining strings</p>
+<p>Do <strong>not</strong> write <code>COL_USERNAME + " = '" + username + "'"</code>. The user decides what <code>username</code> contains. A name like <code>O'Brien</code> breaks the SQL, and a name like <code>x' OR '1'='1</code> changes what the query does: this is called <strong>SQL injection</strong>. With <code>?</code>, the value is always treated as data, never as SQL.</p>
+</aside>
+</li>
+<li>Now connect the LOGIN button. In <strong>LoginActivity</strong>, add two fields for the EditTexts. In <code>onCreate()</code>, find the views and add a click listener:
+<aside class="callout type">
+<p class="callout-title">Type it: use autocomplete, do not copy</p>
+<p>Type <code>btnLogin.setOnClickListener(new On</code>, pick <strong>OnClickListener</strong> (android.view.View) and press <strong>Enter</strong>. Android Studio writes the listener and the empty <code>onClick()</code> method. You only type the one line inside: <code>doLogin();</code> (it stays red until the next step).</p>
+</aside>
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/userlogin/LoginActivity.java</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">public class LoginActivity extends AppCompatActivity {</span><span class="line">&#8203;</span><span class="line">    private UserDbHelper dbHelper;</span><span class="line hl">    private EditText edtUsername;</span><span class="line hl">    private EditText edtPassword;</span><span class="line">&#8203;</span><span class="line">    @Override</span><span class="line">    protected void onCreate(Bundle savedInstanceState) {</span><span class="line cm">        // ... the template code stays ...</span><span class="line">&#8203;</span><span class="line">        dbHelper = new UserDbHelper(this);</span><span class="line">        dbHelper.getReadableDatabase();</span><span class="line">&#8203;</span><span class="line hl">        edtUsername = findViewById(R.id.edtUsername);</span><span class="line hl">        edtPassword = findViewById(R.id.edtPassword);</span><span class="line hl">&#8203;</span><span class="line hl">        Button btnLogin = findViewById(R.id.btnLogin);</span><span class="line hl">        btnLogin.setOnClickListener(new View.OnClickListener() {</span><span class="line hl">            @Override</span><span class="line hl">            public void onClick(View v) {</span><span class="line hl">                doLogin();</span><span class="line hl">            }</span><span class="line hl">        });</span><span class="line">    }</span><span class="line">}</span></code></pre></div>
+</li>
+<li>Add the <code>doLogin()</code> method under <code>onCreate()</code>. It checks the form first (as in the week 6 lab), then asks the database:
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/userlogin/LoginActivity.java</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">    private void doLogin() {</span><span class="line hl">        String username = edtUsername.getText().toString().trim();</span><span class="line hl">        String password = edtPassword.getText().toString();</span><span class="line hl">&#8203;</span><span class="line hl">        // 1. both fields must be filled in</span><span class="line hl">        if (username.isEmpty()) {</span><span class="line hl">            edtUsername.setError("Username is required");</span><span class="line hl">            edtUsername.requestFocus();</span><span class="line hl">            return;</span><span class="line hl">        }</span><span class="line cm todo">        // TODO: the same check for the password</span><span class="line hl">&#8203;</span><span class="line hl">        // 2. ask the database</span><span class="line hl">        User user = dbHelper.login(username, password);</span><span class="line hl">        if (user == null) {</span><span class="line hl">            Toast.makeText(this, "Invalid username or password!", Toast.LENGTH_LONG).show();</span><span class="line hl">            return;</span><span class="line hl">        }</span><span class="line hl">        Toast.makeText(this, "Login successful: " + user.getRole(), Toast.LENGTH_LONG).show();</span><span class="line hl">    }</span></code></pre></div>
+<aside class="callout note">
+<p class="callout-title">In a real app</p>
+<p>We call <code>dbHelper.login()</code> directly from the Activity. That is fine for this lab: the table is tiny and the query is fast. Real apps move database work <strong>off the main thread</strong>, so a slow query can never freeze the screen. You will see this when you use larger databases or the Room library.</p>
+</aside>
+</li>
+<li>Run the app and try each row of the table. Fill in the last column.
+<div class="table-wrap"><table>
+<thead><tr><th><strong>Username</strong></th><th><strong>Password</strong></th><th><strong>Expected</strong></th><th><strong>What I saw</strong></th></tr></thead>
+<tbody>
+<tr><td>user</td><td>user</td><td>Login successful: user</td><td></td></tr>
+<tr><td>user</td><td>abc</td><td>Invalid username or password!</td><td></td></tr>
+<tr><td>nobody</td><td>user</td><td>The <strong>same</strong> message as above</td><td></td></tr>
+<tr><td><code>x' OR '1'='1</code></td><td>anything</td><td>Invalid username or password!</td><td></td></tr>
+<tr><td>(empty)</td><td>user</td><td>Error on the username field</td><td></td></tr>
+</tbody>
+</table></div>
+</li>
+</ol>
+<div class="exercise">
+<p class="exercise-head"><span>Discussion 3</span></p>
+<p><strong>a.  </strong>A wrong username and a wrong password give exactly the same message. Why is that safer than saying <strong>"Username not found"</strong>?</p>
+<p><strong>b.  </strong>Why does <code>login()</code> need <code>cursor.moveToFirst()</code> before it reads a column? What does it return for <strong>nobody</strong>?</p>
+<p><strong>c.  </strong>The password is <strong>not</strong> in the WHERE clause. Why can we not just write <code>WHERE username = ? AND password = ?</code> in this app?</p>
+</div>
+<aside class="callout checkpoint">
+<p class="callout-title">Checkpoint</p>
+<p>Show the filled-in table above.</p>
+</aside>
+</section>
+
+<section class="step" id="activity-4-remember-the-user-with-sharedpreferences" data-minutes="25">
+<h2>Activity 4 – Remember the user with SharedPreferences</h2>
+<p>Right now the user must sign in every time the app opens. A <strong>session</strong> is a small record of who logged in. <code>SharedPreferences</code> is the right place for it: a few small values in a private file, read every time the app starts. We put all the session code in one class.</p>
+<ol class="steps">
+<li>Create a new Java class named <code>SharedPrefManager</code>:
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/userlogin/SharedPrefManager.java</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">public class SharedPrefManager {</span><span class="line hl">&#8203;</span><span class="line hl">    private static final String PREF_NAME = "user_login_pref";</span><span class="line hl">    private static final String KEY_ID = "id";</span><span class="line hl">    private static final String KEY_USERNAME = "username";</span><span class="line hl">    private static final String KEY_EMAIL = "email";</span><span class="line hl">    private static final String KEY_ROLE = "role";</span><span class="line hl">&#8203;</span><span class="line hl">    private final SharedPreferences prefs;</span><span class="line hl">&#8203;</span><span class="line hl">    public SharedPrefManager(Context context) {</span><span class="line hl">        prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);</span><span class="line hl">    }</span><span class="line hl">&#8203;</span><span class="line hl">    /** Saves the user who just logged in. */</span><span class="line hl">    public void storeUser(User user) {</span><span class="line hl">        SharedPreferences.Editor editor = prefs.edit();</span><span class="line hl">        editor.putLong(KEY_ID, user.getId());</span><span class="line hl">        editor.putString(KEY_USERNAME, user.getUsername());</span><span class="line hl">        editor.putString(KEY_EMAIL, user.getEmail());</span><span class="line cm todo">        editor.putString(KEY_ROLE, ____);</span><span class="line hl">        editor.apply();                       // nothing is saved without apply()</span><span class="line hl">    }</span><span class="line hl">&#8203;</span><span class="line hl">    /** True when a session is saved. */</span><span class="line hl">    public boolean isLoggedIn() {</span><span class="line hl">        return prefs.getString(KEY_USERNAME, null) != null;</span><span class="line hl">    }</span><span class="line hl">&#8203;</span><span class="line hl">    /** The user saved in the session. */</span><span class="line hl">    public User getUser() {</span><span class="line hl">        User user = new User();</span><span class="line hl">        user.setId(prefs.getLong(KEY_ID, -1));</span><span class="line hl">        user.setUsername(prefs.getString(KEY_USERNAME, null));</span><span class="line hl">        user.setEmail(prefs.getString(KEY_EMAIL, null));</span><span class="line hl">        user.setRole(prefs.getString(KEY_ROLE, null));</span><span class="line hl">        return user;</span><span class="line hl">    }</span><span class="line hl">&#8203;</span><span class="line hl">    /** Deletes the session. */</span><span class="line hl">    public void logout() {</span><span class="line hl">        prefs.edit().clear().apply();</span><span class="line hl">    }</span><span class="line hl">}</span></code></pre></div>
+<aside class="callout warning">
+<p class="callout-title">Never store the password here</p>
+<p><code>SharedPreferences</code> is a plain XML file in the app’s folder. Saving <strong>who</strong> logged in is fine. Saving the <strong>password</strong> is not.</p>
+</aside>
+</li>
+<li>In <strong>LoginActivity</strong>, replace the last Toast line of <code>doLogin()</code> so a good login saves the session and opens MainActivity. Add the <code>openMain()</code> method under <code>doLogin()</code>:
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/userlogin/LoginActivity.java</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line cm">        // in doLogin(), replace: Toast.makeText(this, "Login successful: " + ...</span><span class="line hl">        Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();</span><span class="line hl">        new SharedPrefManager(this).storeUser(user);</span><span class="line hl">        openMain();</span><span class="line hl">    }</span><span class="line hl">&#8203;</span><span class="line hl">    private void openMain() {</span><span class="line hl">        startActivity(new Intent(this, MainActivity.class));</span><span class="line hl">        finish();   // close the login screen</span><span class="line hl">    }</span></code></pre></div>
+</li>
+<li>If a session is already saved, the user should skip the login screen. In <code>onCreate()</code> of LoginActivity, add these lines <strong>right after</strong> the template code, before <code>dbHelper = …</code>:
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/userlogin/LoginActivity.java (in onCreate)</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line cm">        // ... the template code stays ...</span><span class="line">&#8203;</span><span class="line hl">        // already logged in? go straight to MainActivity</span><span class="line hl">        if (new SharedPrefManager(this).isLoggedIn()) {</span><span class="line hl">            openMain();</span><span class="line hl">            return;</span><span class="line hl">        }</span><span class="line">&#8203;</span><span class="line">        dbHelper = new UserDbHelper(this);</span></code></pre></div>
+</li>
+<li>Now the main screen. Replace the content of <strong>res/layout/activity_main.xml</strong>:
+<div class="code"><div class="code-head"><span class="code-file">res/layout/activity_main.xml</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span><span class="line hl">&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"</span><span class="line hl">    xmlns:tools="http://schemas.android.com/tools"</span><span class="line hl">    android:id="@+id/main"</span><span class="line hl">    android:layout_width="match_parent"</span><span class="line hl">    android:layout_height="match_parent"</span><span class="line hl">    android:gravity="center"</span><span class="line hl">    android:orientation="vertical"</span><span class="line hl">    tools:context=".MainActivity"&gt;</span><span class="line hl">&#8203;</span><span class="line hl">    &lt;TextView</span><span class="line hl">        android:id="@+id/tvHello"</span><span class="line hl">        android:layout_width="wrap_content"</span><span class="line hl">        android:layout_height="wrap_content"</span><span class="line hl">        android:textSize="20sp" /&gt;</span><span class="line hl">&#8203;</span><span class="line hl">    &lt;Button</span><span class="line hl">        android:id="@+id/btnLogout"</span><span class="line hl">        android:layout_width="wrap_content"</span><span class="line hl">        android:layout_height="wrap_content"</span><span class="line hl">        android:layout_marginTop="48dp"</span><span class="line hl">        android:text="LOGOUT" /&gt;</span><span class="line hl">&#8203;</span><span class="line hl">&lt;/LinearLayout&gt;</span></code></pre></div>
+</li>
+<li>In <strong>MainActivity.java</strong>, add this at the end of <code>onCreate()</code>. MainActivity also checks the session: nobody should reach it without logging in.
+<aside class="callout type">
+<p class="callout-title">Type it: use autocomplete, do not copy</p>
+<p>For the LOGOUT listener, type <code>btnLogout.setOnClickListener(new On</code>, pick <strong>OnClickListener</strong> (android.view.View) and press <strong>Enter</strong>. Then write the three TODO lines inside <code>onClick()</code> yourself.</p>
+</aside>
+<div class="code"><div class="code-head"><span class="code-file">java/com/example/userlogin/MainActivity.java (end of onCreate)</span><button class="copy" type="button" aria-label="Copy code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg><span>Copy</span></button></div><pre><code><span class="line hl">        SharedPrefManager spm = new SharedPrefManager(this);</span><span class="line hl">        if (!spm.isLoggedIn()) {              // no session: back to the login screen</span><span class="line hl">            startActivity(new Intent(this, LoginActivity.class));</span><span class="line hl">            finish();</span><span class="line hl">            return;</span><span class="line hl">        }</span><span class="line hl">&#8203;</span><span class="line hl">        User user = spm.getUser();</span><span class="line hl">        TextView tvHello = findViewById(R.id.tvHello);</span><span class="line hl">        tvHello.setText("Hello " + user.getUsername());</span><span class="line hl">&#8203;</span><span class="line hl">        Button btnLogout = findViewById(R.id.btnLogout);</span><span class="line hl">        btnLogout.setOnClickListener(new View.OnClickListener() {</span><span class="line hl">            @Override</span><span class="line hl">            public void onClick(View v) {</span><span class="line cm todo">                // TODO 1: delete the session with spm</span><span class="line cm todo">                // TODO 2: show the Toast "You have logged out."</span><span class="line cm todo">                // TODO 3: open LoginActivity and close this screen</span><span class="line cm todo">                //         (inside the listener, the Context is MainActivity.this)</span><span class="line hl">            }</span><span class="line hl">        });</span></code></pre></div>
+<aside class="callout predict">
+<p class="callout-title">Predict first</p>
+<p>Log in as <strong>user</strong>, then press the <strong>Back</strong> gesture on MainActivity. Where do you go: the login screen, or out of the app? Write it down, then try it. Which line decides this?</p>
+</aside>
+<figure><img src="assets/img/fig04.png" alt="Screenshot" width="360" loading="lazy"></figure>
+</li>
+<li>Test the whole flow: log in as <strong>user</strong>; close the app completely (swipe it away from Recents) and open it again; then tap LOGOUT and open the app again.
+</li>
+</ol>
+<div class="exercise">
+<p class="exercise-head"><span>Discussion 4</span></p>
+<p><strong>a.  </strong>After you closed and reopened the app, which screen did you see? Which line of code made that happen?</p>
+<p><strong>b.  </strong>Open <strong>View › Tool Windows › Device Explorer</strong> and go to <code>/data/data/com.example.userlogin/</code>. Find the database file and the SharedPreferences file. What is inside <strong>shared_prefs/user_login_pref.xml</strong>?</p>
+<p><strong>c.  </strong>Why does the session keep the <strong>id</strong> and the <strong>role</strong>, but the password stays only in the database (as a hash)?</p>
+</div>
+<aside class="callout checkpoint">
+<p class="callout-title">Checkpoint</p>
+<p>Log in, close and reopen the app (you go straight to Hello user), then log out.</p>
+</aside>
+</section>
+
+<section class="step" id="activity-5-bug-hunt" data-minutes="15">
+<h2>Activity 5 – Bug hunt</h2>
+<p>Each snippet below has <strong>one</strong> change from your working UserLogin app. First write down what you think happens: a crash, a login that always fails, or something strange. Then try the ones we pick in class, and compare.</p>
+<div class="table-wrap"><table>
+<thead><tr><th><strong>#</strong></th><th><strong>The change</strong></th><th><strong>My prediction</strong></th><th><strong>What really happens</strong></th></tr></thead>
+<tbody>
+<tr><td>1</td><td>In <code>insertUser()</code>: <code>values.put(COL_PASSWORD, plainPassword);</code> The app is uninstalled and run again, then you log in as <strong>user / user</strong>.</td><td></td><td></td></tr>
+<tr><td>2</td><td>A new column <code>phone TEXT</code> is added to <code>CREATE_USERS</code>. <code>DB_VERSION</code> is still <strong>1</strong>. The app is run again (not uninstalled).</td><td></td><td></td></tr>
+<tr><td>3</td><td>In <code>login()</code>: the <code>if (cursor.moveToFirst())</code> line is deleted (the code inside it stays). You log in as <strong>nobody</strong>.</td><td></td><td></td></tr>
+<tr><td>4</td><td>In <code>login()</code>: <code>String where = COL_USERNAME + " = '" + username + "'";</code> and <code>args</code> is <code>null</code>. You type <code>O'Brien</code> as the username.</td><td></td><td></td></tr>
+<tr><td>5</td><td>In <code>openMain()</code>: the <code>finish();</code> line is deleted. You log in, then press <strong>Back</strong>.</td><td></td><td></td></tr>
+<tr><td>6</td><td>In <code>logout()</code>: <code>prefs.edit().clear();</code> (no <code>apply()</code>). You log out and open the app again.</td><td></td><td></td></tr>
+</tbody>
+</table></div>
+<div class="exercise">
+<p class="exercise-head"><span>Discussion 5</span></p>
+<p><strong>a.  </strong>Which bugs <strong>crash</strong> the app, and which ones only give the <strong>wrong behaviour</strong> with no error? Which kind is harder to find?</p>
+<p><strong>b.  </strong>In bug 4, someone types <code>x' OR '1'='1</code> as the username and <strong>admin</strong> as the password. Write out the SQL that runs. Who is logged in?</p>
+<p><strong>c.  </strong>In bug 2, what are the two ways to make the new column appear? Which one would you use for an app that real users already have?</p>
+</div>
+</section>
+
+<section class="step" id="post-lab-assignment-10-marks" data-minutes="60">
+<h2>Post-Lab Assignment (10 marks)</h2>
+<p>Start from your <strong>UserLogin</strong> project and make these changes:</p>
+<ol class="steps">
+<li>Users can sign in with their <strong>username or their email address</strong>. For example, both <strong>user / user</strong> and <strong>user@example.com / user</strong> must work. Keep using <code>?</code> placeholders.
+</li>
+<li>Add <strong>two</strong> new accounts whose roles are different from the three accounts in the lab, for example <strong>lecturer</strong> and <strong>guest</strong>. One of them uses <strong>your own name</strong> as the username.
+</li>
+<li>MainActivity shows the role in the greeting, for example <strong>Hello siti (lecturer)</strong>.
+<figure><img src="assets/img/fig05.png" alt="Screenshot" width="170" loading="lazy"></figure>
+</li>
+<li>Show that an inactive account cannot log in: in the Database Inspector, change <code>is_active</code> to <strong>0</strong> for one account, then try to log in as that user.
+</li>
+</ol>
+<p>Submit your <strong>UserDbHelper.java</strong> and <strong>MainActivity.java</strong>, and screenshots of the app showing: a login with an email address, the greeting with the role, and the message when the inactive account tries to log in.</p>
+<p><strong>Marks:</strong> 10 marks.</p>
+</section>
+  </main>
+</div>
+<div class="nav">
+  <button class="back" id="back" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.4 7.4 14 6l-6 6 6 6 1.4-1.4L10.8 12z"/></svg>Back</button>
+  <button class="next" id="next" type="button">Next<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6 8.6 7.4 13.2 12l-4.6 4.6L10 18l6-6z"/></svg></button>
+</div>
+<script src="assets/codelab.js?v=2"></script>
+</body>
+</html>
